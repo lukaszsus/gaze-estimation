@@ -86,7 +86,7 @@ def do_experiments():
 
     dt = datetime.now().strftime('%Y-%m-%d-t%H-%M')
     for i in range(len(models_params)):
-        if i <= 4:
+        if i <= 13:
             continue
         model_params = models_params[i]
         train_dataset, test_dataset = load_mpiigaze_train_test_ds_generator(person="p00",

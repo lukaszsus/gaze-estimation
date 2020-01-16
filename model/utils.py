@@ -26,7 +26,7 @@ def create_dirs():
 def plot_metrics(history, metric_names, name):
     n_metrics = len(metric_names)
 
-    for metric_name in metric_names:
+    for i, metric_name in enumerate(metric_names):
         train_metric = history[metric_name]
         val_metric = history[f'val_{metric_name}']
 
@@ -34,7 +34,7 @@ def plot_metrics(history, metric_names, name):
 
         plt.figure(figsize=(30, 10))
 
-        plt.subplot(1, n_metrics, 1)
+        plt.subplot(i, n_metrics, 1)
         plt.plot(epochs, train_metric, '--o', label='train')
         plt.plot(epochs, val_metric, '--o', label='validation')
         plt.xlabel('num of epochs')
