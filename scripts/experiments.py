@@ -5,9 +5,6 @@ import time
 import pandas as pd
 import tensorflow as tf
 from datetime import datetime
-from sklearn.metrics import f1_score
-from tensorflow.compat.v1 import ConfigProto
-from tensorflow.compat.v1 import InteractiveSession
 
 # """
 # That's for GPU training and maintaining one session and nice cuda lib loading.
@@ -19,8 +16,7 @@ from tensorflow.compat.v1 import InteractiveSession
 from data_loader.mpiigaze_processed_loader import load_mpiigaze_train_test_ds_generator
 from models.modal3_conv_net import Modal3ConvNet
 from models.modal3_conv_net_stacked import Modal3ConvNetStacked
-from models.utils import plot_metrics, prepare_and_plot_confusion_matrix, save_summary, create_dirs, RESULTS_PATH
-from settings import DATA_PATH
+from utils.plots import plot_metrics, save_summary, create_dirs, RESULTS_PATH
 
 
 def do_experiments():

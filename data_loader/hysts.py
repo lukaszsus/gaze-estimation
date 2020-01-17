@@ -16,6 +16,8 @@ def _load_one_person(person):
     path = os.path.join(os.path.join(DATA_PATH, path))
     with np.load(path) as fin:
         images = fin['image']
+        shape = images.shape
+        images = images.reshape((shape[0], shape[1], shape[2], 1))
         poses = fin['pose']
         gazes = fin['gaze']
     return images, poses, gazes

@@ -17,7 +17,7 @@ session = InteractiveSession(config=config)
 
 from data_loader.hysts import load_hysts_mpiigaze_train_test_ds_generator
 from models.modal2_conv_net import Modal2ConvNet
-from models.utils import plot_metrics, save_summary, create_dirs, RESULTS_PATH
+from utils.plots import plot_metrics, save_summary, create_dirs, RESULTS_PATH
 
 
 def do_experiments():
@@ -87,8 +87,8 @@ def do_experiments():
     for i in range(len(models_params)):
         model_params = models_params[i]
         train_dataset, test_dataset = load_hysts_mpiigaze_train_test_ds_generator(person=0,
-                                                                            val_split=0.2,
-                                                                            batch_size=model_params["batch_size"])
+                                                                                  val_split=0.2,
+                                                                                  batch_size=model_params["batch_size"])
 
         optimizer = tf.keras.optimizers.get(model_params["optimizer_cls"]).from_config(
             {"learning_rate": model_params["learning_rate"]})
@@ -103,7 +103,7 @@ def do_experiments():
                                tf.keras.metrics.MeanSquaredError()])
         start = time.time()
         history = model.fit_generator(generator=train_dataset, validation_data=test_dataset,
-                            epochs=model_params["epochs"])
+                                      epochs=model_params["epochs"])
         history = history.history
         elapsed_time = time.time() - start
 
