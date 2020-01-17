@@ -26,15 +26,15 @@ def create_dirs():
 def plot_metrics(history, metric_names, name):
     n_metrics = len(metric_names)
 
+    plt.figure(figsize=(30, 10))
+
     for i, metric_name in enumerate(metric_names):
         train_metric = history[metric_name]
         val_metric = history[f'val_{metric_name}']
 
         epochs = list(range(1, len(train_metric) + 1))
 
-        plt.figure(figsize=(30, 10))
-
-        plt.subplot(i, n_metrics, 1)
+        plt.subplot(1, n_metrics, i + 1)
         plt.plot(epochs, train_metric, '--o', label='train')
         plt.plot(epochs, val_metric, '--o', label='validation')
         plt.xlabel('num of epochs')
@@ -79,7 +79,7 @@ def save_summary(model, dir):
 
 def load_model(model_params, model_weights_path, train_dataset, x_test, y_test):
     """
-    Warning: It is required that model trains for one epoch before loading weights form file.
+    Warning: It is required that models trains for one epoch before loading weights form file.
     """
     model = VggModel(model_params)
     model.fit(train_dataset=train_dataset, x_test=x_test, y_test=y_test, epochs=1)

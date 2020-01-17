@@ -57,7 +57,7 @@ def _prepare_headposes(headposes):
     return headposes
 
 
-def _prepare_dataset_generator(x, y, batch_size=128):
+def prepare_dataset_generator(x, y, batch_size=128):
     """Prepares dataset to train in mini-batches."""
     ds_size = len(y)
     x = tf.data.Dataset.from_tensor_slices(x)
@@ -78,6 +78,6 @@ def load_mpiigaze_train_test_ds_generator(person, out_class, val_split = 0.2, ba
                                                           dataset["headpose"], y,
                                                           test_size=val_split, random_state=42)
     del dataset
-    train_dataset = _prepare_dataset_generator((right_eye_train, left_eye_train, headpose_train), y_train, batch_size)
-    test_dataset = _prepare_dataset_generator((right_eye_test, left_eye_test, headpose_test), y_test, batch_size)
+    train_dataset = prepare_dataset_generator((right_eye_train, left_eye_train, headpose_train), y_train, batch_size)
+    test_dataset = prepare_dataset_generator((right_eye_test, left_eye_test, headpose_test), y_test, batch_size)
     return train_dataset, test_dataset

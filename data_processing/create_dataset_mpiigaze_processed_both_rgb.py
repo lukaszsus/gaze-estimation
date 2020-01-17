@@ -13,9 +13,9 @@ from settings import DATA_PATH
 
 
 def load_face_model():
-    path = mpiigaze_path_wrapper("6 points-based face model.mat")
+    path = mpiigaze_path_wrapper("6 points-based face models.mat")
     matdata = scipy.io.loadmat(path, struct_as_record=False, squeeze_me=True)
-    return matdata["model"]
+    return matdata["models"]
 
 
 def load_annotation(path):

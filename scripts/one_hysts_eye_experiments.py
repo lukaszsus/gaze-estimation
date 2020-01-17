@@ -5,35 +5,32 @@ import time
 import pandas as pd
 import tensorflow as tf
 from datetime import datetime
-from sklearn.metrics import f1_score
-from tensorflow.compat.v1 import ConfigProto
-from tensorflow.compat.v1 import InteractiveSession
+from tensorflow.compat.v1 import ConfigProto, InteractiveSession
 
-# """
-# That's for GPU training and maintaining one session and nice cuda lib loading.
-# """
-# config = ConfigProto()
-# config.gpu_options.allow_growth = True
+"""
+That's for GPU training and maintaining one session and nice cuda lib loading.
+"""
+config = ConfigProto()
+config.gpu_options.allow_growth = True
 # config.gpu_options.per_process_gpu_memory_fraction = 0.75
-# session = InteractiveSession(config=config)
-from data_loader.mpiigaze_processed_loader import load_mpiigaze_train_test_ds_generator
-from models.modal3_conv_net import Modal3ConvNet
-from models.modal3_conv_net_stacked import Modal3ConvNetStacked
-from models.utils import plot_metrics, prepare_and_plot_confusion_matrix, save_summary, create_dirs, RESULTS_PATH
-from settings import DATA_PATH
+session = InteractiveSession(config=config)
+
+from data_loader.hysts import load_hysts_mpiigaze_train_test_ds_generator
+from models.modal2_conv_net import Modal2ConvNet
+from models.utils import plot_metrics, save_summary, create_dirs, RESULTS_PATH
 
 
 def do_experiments():
     input_size = {"height": 36, "width": 60, "num_channels": 3}
     models_params = list()
 
-    models_cls = [Modal3ConvNet, Modal3ConvNetStacked]
-    out_classes = ["gaze", "coordinates"]
-    grayscales = [True, False]
-    num_epochs = [4]
+    models_cls = [Modal2ConvNet]
+    out_classes = ["gaze"]
+    grayscales = [True]
+    num_epochs = [20]
     batch_sizes = [128]
-    optimizers_cls = ['Adam']
-    learning_rates = [0.003]
+    optimizers_cls = ['Adam', 'SGD']
+    learning_rates = [0.01, 0.003, 0.001, 0.0001]
     losses = ['mse', 'mae']
     conv_sizes_list = [({"n_filters": 16, "filter_size": (5, 5), "padding": "valid", "stride": (1, 1),
                          "pool": "avg", "pool_size": (2, 2), "pool_stride": (2, 2)},
@@ -41,7 +38,7 @@ def do_experiments():
                          "pool": None, "pool_size": None, "pool_stride": None},
                         {"n_filters": 16, "filter_size": (5, 5), "padding": "valid", "stride": (1, 1),
                          "pool": "avg", "pool_size": (2, 2), "pool_stride": (2, 2)})]
-    dense_sizes_list = [(256, 64, 1)]
+    dense_sizes_list = [(256, 64, 2)]
     dropouts = [0.1]
 
     i = 0
@@ -88,22 +85,16 @@ def do_experiments():
 
     dt = datetime.now().strftime('%Y-%m-%d-t%H-%M')
     for i in range(len(models_params)):
-        if i <= 13:
-            continue
         model_params = models_params[i]
-        train_dataset, test_dataset = load_mpiigaze_train_test_ds_generator(person="p00",
-                                                                            out_class=model_params["out_class"],
+        train_dataset, test_dataset = load_hysts_mpiigaze_train_test_ds_generator(person=0,
                                                                             val_split=0.2,
-                                                                            batch_size=model_params["batch_size"],
-                                                                            grayscale=grayscale)
+                                                                            batch_size=model_params["batch_size"])
 
         optimizer = tf.keras.optimizers.get(model_params["optimizer_cls"]).from_config(
             {"learning_rate": model_params["learning_rate"]})
         loss = tf.keras.losses.get(model_params["loss"])
 
-        model = model_params["model_cls"](height=input_size["height"], width=input_size["width"],
-                                          num_channels=input_size["num_channels"],
-                                          conv_sizes=model_params["conv_sizes"],
+        model = model_params["model_cls"](conv_sizes=model_params["conv_sizes"],
                                           dense_sizes=model_params["dense_sizes"],
                                           dropout=model_params["dropout"])
         model.compile(optimizer=optimizer,
@@ -129,7 +120,7 @@ def do_experiments():
                "optimizer_cls": params["optimizer_cls"],
                "learning_rate": params["learning_rate"],
                "loss": params["loss"],
-               "epoch_time": elapsed_time / epochs,
+               "epoch_time": elapsed_time / params["epochs"],
                "time": elapsed_time,
                "mean_absolute_error": history["mean_absolute_error"][-1],
                "mean_squared_error": history["mean_squared_error"][-1]}

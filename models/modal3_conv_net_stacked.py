@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-from model.modal3_conv_net import Modal3ConvNet
+from models.modal3_conv_net import Modal3ConvNet
 
 
 class Modal3ConvNetStacked(Modal3ConvNet):
