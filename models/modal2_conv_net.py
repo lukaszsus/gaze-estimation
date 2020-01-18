@@ -3,6 +3,8 @@ import time
 import tensorflow as tf
 from tqdm import tqdm
 
+from utils.metrics import compute_angle_error
+
 
 class Modal2ConvNet(tf.keras.Model):
     """
@@ -11,8 +13,11 @@ class Modal2ConvNet(tf.keras.Model):
         -   headpose
     """
 
-    def __init__(self, conv_sizes, dense_sizes, dropout, output_size):
-        """Inits the class."""
+    def __init__(self, conv_sizes, dense_sizes, dropout, output_size, track_angle_error):
+        """
+        :track_angle_error: True cause that every test step will be done twice.
+                            It will count angle error and send it to comet.ml.
+        """
         super().__init__()
         self.conv_layers = None
         self._init_conv_layers(conv_sizes)
@@ -21,6 +26,7 @@ class Modal2ConvNet(tf.keras.Model):
         self.dense_layers = None
         self._init_dense_layers(dense_sizes, dropout)
         self.output_size = output_size
+        self.track_angle_error = track_angle_error
 
     def _init_conv_layers(self, conv_sizes=None):
         if conv_sizes is None:
@@ -200,6 +206,17 @@ class Modal2ConvNet(tf.keras.Model):
         experiment.log_metric("test_mean_squared_error", self.test_mse.result().numpy(), step=epoch)
         for column in range(self.output_size):
             experiment.log_metric(f"test_mae_{column}", self.test_mae_column[column].result().numpy(), step=epoch)
+
+        if self.track_angle_error:
+            predictions = list()
+            labels = list()
+            for x, y in self.test_dataset:
+                predictions.append(self.predict(x))
+                labels.append(y)
+            predictions = tf.concat(predictions, axis=0)
+            labels = tf.concat(labels, axis=0)
+            angle_error = tf.math.reduce_mean(compute_angle_error(labels=labels, predictions=predictions))
+            experiment.log_metric("angle_error_degrees", angle_error, step=epoch)
 
     def __reset_metrics_states(self):
         self.train_loss.reset_states()

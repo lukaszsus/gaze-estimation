@@ -1,10 +1,13 @@
 import json
 import os
+
+import numpy as np
 import pandas as pd
 from datetime import datetime
 from comet_ml import Experiment
 
 from settings import DATA_PATH, RESULTS_PATH
+from utils.metrics import compute_angle_error
 from utils.plots import plot_metrics
 
 
@@ -41,20 +44,25 @@ def save_parameters_to_comet(experiment_name: str,
     return experiment
 
 
+def save_metrics_to_comet(experiment, labels, predictions):
+    angle_error = np.mean(compute_angle_error(labels=labels, predictions=predictions))
+    experiment.log_metric("angle_error_degrees", angle_error)
+
+
 def _save_data_set_parameters_to_comet(experiment, data_set):
     for key, value in data_set.items():
         experiment.log_parameter(f"data_set_{key}", value)
 
 
-def save_results_locally(name: str, experiment, start_time: datetime, experiment_id, model, metrics, history):
-    dir_path = os.path.join(RESULTS_PATH, name)
-    start_time_str = start_time.strftime("%Y-%m-%d-t%H-%M-%S")
-    _plot_metrics(dir_path, start_time_str, experiment_id, history, metrics)
-    _save_table(dir_path, start_time_str, experiment_id, experiment)
-    _save_weights(dir_path, model=model, start_time_str=start_time_str, experiment_id=experiment_id)
+# def save_results_locally(name: str, experiment, start_time: datetime, experiment_id, model, metrics, history):
+#     dir_path = os.path.join(RESULTS_PATH, name)
+#     start_time_str = start_time.strftime("%Y-%m-%d-t%H-%M-%S")
+#     save_metrics_plots(dir_path, start_time_str, experiment_id, history, metrics)
+#     save_table(dir_path, start_time_str, experiment_id, experiment)
+#     save_weights(dir_path, model=model, start_time_str=start_time_str, experiment_id=experiment_id)
 
 
-def _save_table(dir_path: str, start_time_str: str, experiment_id, experiment):
+def save_table(dir_path: str, start_time_str: str, experiment_id, experiment):
     subdir_path = os.path.join(dir_path, "tables")
     subdir_path = os.path.join(subdir_path, start_time_str)
 
@@ -81,7 +89,7 @@ def _save_table(dir_path: str, start_time_str: str, experiment_id, experiment):
         df.to_csv(path, index=False)
 
 
-def _save_weights(dir_path, start_time_str, experiment_id, model):
+def save_weights(dir_path, start_time_str, experiment_id, model):
     subdir_path = os.path.join(dir_path, "models")
     subdir_path = os.path.join(subdir_path, start_time_str)
     if not os.path.exists(subdir_path):
@@ -89,7 +97,7 @@ def _save_weights(dir_path, start_time_str, experiment_id, model):
     model.save_weights(os.path.join(subdir_path, 'weights-{}.h5'.format(str(experiment_id).zfill(4))))
 
 
-def _plot_metrics(dir_path, start_time_str, experiment_id, history, metrics):
+def save_plots(dir_path, start_time_str, experiment_id, history, metrics):
     subdir_path = os.path.join(dir_path, "plots")
     subdir_path = os.path.join(subdir_path, start_time_str)
     if not os.path.exists(subdir_path):
