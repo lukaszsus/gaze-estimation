@@ -13,9 +13,9 @@ from settings import DATA_PATH
 
 
 def load_face_model():
-    path = mpiigaze_path_wrapper("6 points-based face models.mat")
+    path = mpiigaze_path_wrapper("6 points-based face model.mat")
     matdata = scipy.io.loadmat(path, struct_as_record=False, squeeze_me=True)
-    return matdata["models"]
+    return matdata["model"]
 
 
 def load_annotation(path):
@@ -42,6 +42,7 @@ def load_screen_size(path, type="pixel"):
     matdata = scipy.io.loadmat(path, struct_as_record=False, squeeze_me=True)
     h, w = matdata[f"height_{type}"], matdata[f"width_{type}"]
     return (h, w)
+
 
 def count_gaze_angles(gaze):
     gaze_theta = np.arcsin((-1) * gaze[1].squeeze())
@@ -84,23 +85,23 @@ def get_img_gaze_headpose_per_eye(im, eye_center, head_rotation, gaze_target,
     return data
 
 
-def parse_mpiigaze(person: int, day: str, img_n: str, eye_image_width=60, eye_image_height=36):
+def parse_mpiigaze(person_id: int, day: int, img_n: int, eye_image_width=60, eye_image_height=36):
     face_model = load_face_model()
 
-    person = str(person).zfill(2)
-    day = str(day).zfill(2)
-    img_n = str(img_n).zfill(4)
-    im = load_image_by_cv2(mpiigaze_path_wrapper(f"Data/Original/p{person}/day{day}/{img_n}.jpg"))
-    annotation = np.loadtxt(mpiigaze_path_wrapper(f"Data/Original/p{person}/day{day}/annotation.txt"))
-    camera_matrix = load_camera_matrix(path=f"Data/Original/p{person}/Calibration/Camera.mat")
+    person_id_str = str(person_id).zfill(2)
+    day_str = str(day).zfill(2)
+    img_n_str = str(img_n).zfill(4)
+    im = load_image_by_cv2(mpiigaze_path_wrapper(f"Data/Original/p{person_id_str}/day{day_str}/{img_n_str}.jpg"))
+    annotation = np.loadtxt(mpiigaze_path_wrapper(f"Data/Original/p{person_id_str}/day{day_str}/annotation.txt"))
+    camera_matrix = load_camera_matrix(path=f"Data/Original/p{person_id_str}/Calibration/Camera.mat")
 
-    headpose_hr = np.reshape(annotation[0, 29:32], (1, -1))
-    headpose_ht = np.reshape(annotation[0, 32:35], (1, -1))
+    headpose_hr = np.reshape(annotation[img_n - 1, 29:32], (1, -1))
+    headpose_ht = np.reshape(annotation[img_n - 1, 32:35], (1, -1))
     h_r, _ = cv2.Rodrigues(headpose_hr)
     fc = np.dot(h_r, face_model)
     fc = fc + np.reshape(headpose_ht, (-1, 1))
 
-    gaze_target = annotation[0, 26:29]
+    gaze_target = annotation[img_n - 1, 26:29]
     gaze_target = np.reshape(gaze_target, (-1, 1))
 
     right_eye_center = 0.5 * (fc[:, 0] + fc[:, 1])
@@ -126,23 +127,8 @@ def get_all_jpg_files(path):
     return filenames
 
 
-# def save_coords(person_id, day, coordinates):
-#     if not isinstance(coordinates, np.ndarray):
-#         coordinates = np.array(coordinates)
-#
-#     data_list = [coordinates]
-#     dirs = ["coordinates"]
-#
-#     dir_path = os.path.join(DATA_PATH, "mpiigaze_processed_both_rgb")
-#     for i in range(len(data_list)):
-#         data = data_list[i]
-#         d = dirs[i]
-#         path = os.path.join(dir_path, d, f"{d}_p{person_id}_{day}.pkl")
-#         with open(path, "wb") as file:
-#             pickle.dump(data, file)
-
-
-def save_dataset_mpiigaze_processed_both_rgb(person_id, day, right_eyes, left_eyes, headposes, gazes, coordinates):
+def save_dataset_mpiigaze_processed_both_rgb(person_id, day, right_eyes, left_eyes, headposes, gazes, coordinates,
+                                             dataset_name="mpiigaze_processed_both_rgb"):
     right_eyes = np.array(right_eyes)
     left_eyes = np.array(left_eyes)
     headposes = np.array(headposes)
@@ -153,7 +139,7 @@ def save_dataset_mpiigaze_processed_both_rgb(person_id, day, right_eyes, left_ey
     data_list = [right_eyes, left_eyes, headposes, gazes, coordinates]
     dirs = ["right_eye", "left_eye", "headpose", "gaze", "coordinates"]
 
-    dir_path = os.path.join(DATA_PATH, "mpiigaze_processed_both_rgb")
+    dir_path = os.path.join(DATA_PATH, dataset_name)
     for i in range(len(data_list)):
         data = data_list[i]
         d = dirs[i]
@@ -162,8 +148,8 @@ def save_dataset_mpiigaze_processed_both_rgb(person_id, day, right_eyes, left_ey
             pickle.dump(data, file)
 
 
-def create_dirs():
-    dir_path = os.path.join(DATA_PATH, "mpiigaze_processed_both_rgb")
+def create_dirs(dataset_name="mpiigaze_processed_both_rgb"):
+    dir_path = os.path.join(DATA_PATH, dataset_name)
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)
 
@@ -212,13 +198,23 @@ def norm_coords(coords, screen_size):
     return np.concatenate((h, w), axis=1)
 
 
-def create_dataset_mpiigaze_processed_both_rgb():
+def norm_landmarks(landmarks, width=1280, height=720):
+    landmarks = landmarks.reshape((-1, 2))
+    landmarks[:, 0] = landmarks[:, 0] / width
+    landmarks[:, 1] = landmarks[:, 1] / height
+    landmarks = landmarks.reshape((-1, 1)).squeeze()
+    return landmarks
+
+
+def create_dataset_mpiigaze_processed_both_rgb(dataset_name, headpose_type):
     """
     This function creates dataset with following record structure:
     (right_eye_rgb_img, left_eye_rgb_img, gaze_target_theta, gaze_target_phi, norm_x_coordinate, norm_y_coordinate).
     Records are saved to pickles. One pickle for one person_id_str.
     :return:
     """
+    create_dirs(dataset_name)
+
     face_model = load_face_model()
     eye_image_width = 60
     eye_image_height = 36
@@ -265,15 +261,92 @@ def create_dataset_mpiigaze_processed_both_rgb():
 
                 right_eyes.append(right_eye_img)
                 left_eyes.append(left_eye_img)
-                headposes.append(np.concatenate((headpose_hr, headpose_ht), axis=1).squeeze())
+                if headpose_type == "2_3_dim_vectors":
+                    headposes.append(np.concatenate((headpose_hr, headpose_ht), axis=1).squeeze())
+                elif headpose_type == "2_angles":
+                    headposes.append(count_headpose_angles(headpose_hr / np.linalg.norm(headpose_hr)))
                 gazes.append(count_gaze_angles(gaze_target / np.linalg.norm(gaze_target)))
                 coordinates.append([annotation[i, 25], annotation[i, 24]])
 
             coordinates = norm_coords(coordinates, screen_size)
             # save_coords(person_id_str, day, coordinates)
-            save_dataset_mpiigaze_processed_both_rgb(person_id_str, day, right_eyes, left_eyes, headposes, gazes, coordinates)
+            save_dataset_mpiigaze_processed_both_rgb(person_id_str, day, right_eyes, left_eyes, headposes, gazes,
+                                                     coordinates, dataset_name=dataset_name)
+
+
+def create_dataset_mpiigaze_processed_both_rgb_full_transformation(dataset_name):
+    create_dirs(dataset_name)
+
+    face_model = load_face_model()
+    eye_image_width = 60
+    eye_image_height = 36
+
+    for person_id in range(15):
+        person_id_str = str(person_id).zfill(2)
+        print(f"--------------\nperson_id_str: {person_id_str}")
+        camera_matrix = load_camera_matrix(path=f"Data/Original/p{person_id_str}/Calibration/Camera.mat")
+        screen_size = load_screen_size(path=f"Data/Original/p{person_id_str}/Calibration/screenSize.mat")
+        print(screen_size)
+        day_dirs = get_all_days(path=mpiigaze_path_wrapper(f"Data/Original/p{person_id_str}/"))
+
+        for day in day_dirs:
+            left_eyes = list()
+            right_eyes = list()
+            headposes = list()
+            gazes = list()
+            coordinates = list()
+
+            print(day)
+            ann_path = mpiigaze_path_wrapper(f"Data/Original/p{person_id_str}/{day}/annotation.txt")
+            annotation = load_annotation(ann_path)
+            im_filenames = get_all_jpg_files(mpiigaze_path_wrapper(f"Data/Original/p{person_id_str}/{day}/"))
+            for i in tqdm(range(len(im_filenames))):
+                im_file = im_filenames[i]
+                im = load_image_by_cv2(mpiigaze_path_wrapper(f"Data/Original/p{person_id_str}/{day}/{im_file}"))
+
+                headpose_hr = np.reshape(annotation[i, 29:32], (1, -1))
+                headpose_ht = np.reshape(annotation[i, 32:35], (1, -1))
+                h_r, _ = cv2.Rodrigues(headpose_hr)
+                fc = np.dot(h_r, face_model)
+                fc = fc + np.reshape(headpose_ht, (-1, 1))
+
+                gaze_target = annotation[i, 26:29]
+                gaze_target = np.reshape(gaze_target, (-1, 1))
+
+                right_eye_center = 0.5 * (fc[:, 0] + fc[:, 1])
+                left_eye_center = 0.5 * (fc[:, 2] + fc[:, 3])
+
+                right_eye_img, right_eye_headpose, right_eye_gaze = mpii_gaze_normalize_image(im, right_eye_center, h_r,
+                                                                                              gaze_target,
+                                                                                              (eye_image_width,
+                                                                                               eye_image_height),
+                                                                                              camera_matrix)
+                left_eye_img, left_eye_headpose, left_eye_gaze = mpii_gaze_normalize_image(im, left_eye_center, h_r,
+                                                                                           gaze_target,
+                                                                                           (eye_image_width,
+                                                                                            eye_image_height),
+                                                                                           camera_matrix)
+
+                right_eyes.append(right_eye_img)
+                left_eyes.append(left_eye_img)
+
+                headpose_angles = list()
+                headpose_angles.extend(count_headpose_angles(right_eye_headpose / np.linalg.norm(right_eye_headpose)))
+                headpose_angles.extend(count_headpose_angles(left_eye_headpose / np.linalg.norm(left_eye_headpose)))
+                headpose_angles.extend(count_headpose_angles(headpose_hr / np.linalg.norm(headpose_hr)))
+
+                headposes.append(np.array(headpose_angles))
+                gazes.append(count_gaze_angles(gaze_target / np.linalg.norm(gaze_target)))
+                coordinates.append([annotation[i, 25], annotation[i, 24]])
+
+            coordinates = norm_coords(coordinates, screen_size)
+            # save_coords(person_id_str, day, coordinates)
+            save_dataset_mpiigaze_processed_both_rgb(person_id_str, day, right_eyes, left_eyes, headposes, gazes,
+                                                     coordinates, dataset_name=dataset_name)
 
 
 if __name__ == '__main__':
-    create_dirs()
-    create_dataset_mpiigaze_processed_both_rgb()
+    create_dataset_mpiigaze_processed_both_rgb(dataset_name="mpiigaze_processed_both_rgb_2_angles_headpose",
+                                               headpose_type="2_angles")
+    create_dataset_mpiigaze_processed_both_rgb_full_transformation(
+        dataset_name="mpiigaze_processed_both_rgb_3_x_2_angles_headpose")

@@ -13,7 +13,7 @@ from datetime import datetime
 # config.gpu_options.allow_growth = True
 # config.gpu_options.per_process_gpu_memory_fraction = 0.75
 # session = InteractiveSession(config=config)
-from data_loader.mpiigaze_processed_loader import load_mpiigaze_train_test_ds_generator
+from data_loader.mpiigaze_processed_loader import load_mpiigaze_train_test_ds
 from models.modal3_conv_net import Modal3ConvNet
 from models.modal3_conv_net_stacked import Modal3ConvNetStacked
 from utils.plots import plot_metrics, save_summary, create_dirs, RESULTS_PATH
@@ -87,11 +87,11 @@ def do_experiments():
         if i <= 13:
             continue
         model_params = models_params[i]
-        train_dataset, test_dataset = load_mpiigaze_train_test_ds_generator(person="p00",
-                                                                            out_class=model_params["out_class"],
-                                                                            val_split=0.2,
-                                                                            batch_size=model_params["batch_size"],
-                                                                            grayscale=grayscale)
+        train_dataset, test_dataset = load_mpiigaze_train_test_ds(person_id=0,
+                                                                  out_class=model_params["out_class"],
+                                                                  val_split=0.2,
+                                                                  batch_size=model_params["batch_size"],
+                                                                  grayscale=grayscale)
 
         optimizer = tf.keras.optimizers.get(model_params["optimizer_cls"]).from_config(
             {"learning_rate": model_params["learning_rate"]})

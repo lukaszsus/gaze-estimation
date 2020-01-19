@@ -2,6 +2,8 @@ import matplotlib.pyplot as plt
 import os
 from settings import RESULTS_PATH
 
+plt.ioff()
+
 
 def create_dirs():
     if not os.path.exists(RESULTS_PATH):
@@ -34,3 +36,4 @@ def plot_metrics(dirpath, name, history, metric_names):
         plt.title(metric_name)
 
     plt.savefig('{}/{}.png'.format(dirpath, name, bbox_inches='tight'))
+    plt.close('all')

@@ -1,14 +1,16 @@
 import tensorflow as tf
 
+from models.base_regression_model import BaseRegressionModel
 
-class Modal3ConvNet(tf.keras.Model):
+
+class Modal3ConvNet(BaseRegressionModel):
     """
     Convolutional Neural Network with 3 modals:
         -   right eye image
         -   left eye image
         -   headpose
     """
-    def __init__(self, height, width, num_channels, conv_sizes, dense_sizes, dropout):
+    def __init__(self, conv_sizes, dense_sizes, dropout, output_size, track_angle_error):
         """Inits the class."""
         super().__init__()
         self.right_conv_layers = None
@@ -18,6 +20,8 @@ class Modal3ConvNet(tf.keras.Model):
         self._init_flatten()
         self.dense_layers = None
         self._init_dense_layers(dense_sizes, dropout)
+        self.output_size = output_size
+        self.track_angle_error = track_angle_error
 
     def _init_conv_layers(self, conv_sizes=None):
         if conv_sizes is None:
@@ -57,9 +61,6 @@ class Modal3ConvNet(tf.keras.Model):
     def call(self, inputs, training=False):
         """Makes forward pass of the network."""
         (x_right_eye, x_left_eye, x_headpose) = inputs
-        # print(x_right_eye.get_shape())
-        # print(x_left_eye.get_shape())
-        # print(x_headpose.get_shape())
 
         # modal 1
         for conv_layer in self.right_conv_layers:
@@ -68,26 +69,14 @@ class Modal3ConvNet(tf.keras.Model):
         for conv_layer in self.left_conv_layers:
             x_left_eye = conv_layer(x_left_eye)
 
-        # print(x_right_eye.get_shape())
-        # print(x_left_eye.get_shape())
-        # print(x_headpose.get_shape())
-
         # flattening and concatenating
         x_right_eye = self.flatten(x_right_eye)
         x_left_eye = self.flatten(x_left_eye)
 
-        # modal 3
-        # print(x_right_eye.get_shape())
-        # print(x_left_eye.get_shape())
-        # print(x_headpose.get_shape())
         x = tf.concat([x_right_eye, x_left_eye, x_headpose], 1)
 
         for dense_layer in self.dense_layers:
             x = dense_layer(x)
 
         return x
-
-    def predict(self, x):
-        """Predicts outputs based on inputs (x)."""
-        return self.call(x)
 

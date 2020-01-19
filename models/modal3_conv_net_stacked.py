@@ -10,9 +10,9 @@ class Modal3ConvNetStacked(Modal3ConvNet):
         -   left eye image
         -   headpose
     """
-    def __init__(self, height, width, num_channels, conv_sizes, dense_sizes, dropout):
+    def __init__(self, conv_sizes, dense_sizes, dropout, output_size, track_angle_error):
         """Inits the class."""
-        super().__init__(height, width, num_channels, conv_sizes, dense_sizes, dropout)
+        super().__init__(conv_sizes, dense_sizes, dropout, output_size, track_angle_error)
 
     def _init_conv_layers(self, conv_sizes=None):
         if conv_sizes is None:
@@ -39,14 +39,13 @@ class Modal3ConvNetStacked(Modal3ConvNet):
         # modal 1 and 2
         x_eye = tf.concat((x_right_eye, x_left_eye), axis=-1)
         for conv_layer in self.right_conv_layers:
-            x_right_eye = conv_layer(x_right_eye)
+            x_eye = conv_layer(x_eye)
 
         # flattening and concatenating
-        x_right_eye = self.flatten(x_right_eye)
-        x_left_eye = self.flatten(x_left_eye)
+        x_eye = self.flatten(x_eye)
 
         # modal 3
-        x = tf.concat([x_right_eye, x_left_eye, x_headpose], 1)
+        x = tf.concat([x_eye, x_headpose], 1)
 
         for dense_layer in self.dense_layers:
             x = dense_layer(x)

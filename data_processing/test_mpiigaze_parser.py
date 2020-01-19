@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from data_processing.create_dataset_mpiigaze_processed_both_rgb import parse_mpiigaze
+from scripts.create_dataset_mpiigaze_processed_both_rgb import parse_mpiigaze
 
 
 class TestMpiigazeParser(TestCase):
