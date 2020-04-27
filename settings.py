@@ -5,6 +5,7 @@ PROJECT_PATH = os.path.dirname(__file__)
 RESULTS_PATH = None
 MPIIGAZE_PATH = None
 UT_MULTIVIEW_PATH = None
+MPII_FACE_GAZE_PATH = None
 
 try:
     from user_settings import *

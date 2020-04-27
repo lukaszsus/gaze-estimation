@@ -25,12 +25,27 @@ def visualize_faces(faces: list, image):
     plt.title('Face Detection')
 
 
-def visualize_landmarks(landmarks: list, image):
+def visualize_landmarks(landmarks: list, image, numbers=False, color=(255, 255, 255)):
     for landmark in landmarks:
-        for x, y in landmark[0]:
-            # display landmarks on "image_cropped"
-            # with white colour in BGR and thickness 1
-            cv2.circle(image, (x, y), 1, (255, 255, 255), 1)
+        for i, (x, y) in enumerate(landmark):
+            if numbers:
+                font = cv2.FONT_HERSHEY_SIMPLEX
+                cv2.putText(image, str(i), (x, y), fontFace=font, fontScale=1, color=(255, 255, 255), lineType=cv2.LINE_AA)
+            else:
+                cv2.circle(image, (x, y), 2, color, 2)
+    plt.axis("off")
+    plt.imshow(image)
+    plt.show()
+
+
+def visualize_landmarks_mpii_gaze_format(landmarks: list, image, numbers=False):
+    for landmark in landmarks:
+        for i, (x, y) in enumerate(landmark):
+            if numbers:
+                font = cv2.FONT_HERSHEY_SIMPLEX
+                cv2.putText(image, str(i), (x, y), fontFace=font, fontScale=1, color=(255, 255, 255), lineType=cv2.LINE_AA)
+            else:
+                cv2.circle(image, (x, y), 2, (255, 255, 255), 2)
     plt.axis("off")
     plt.imshow(image)
     plt.show()
