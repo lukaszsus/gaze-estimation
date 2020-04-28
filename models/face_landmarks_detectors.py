@@ -1,14 +1,19 @@
 import os
 import cv2
-import numpy as np
 
 from urllib import request as urlreq
 
-from settings import PROJECT_PATH, DATA_PATH
+from settings import DATA_PATH
+
+
+"""
+File deprecated. Instead of that use classes defined in models/face_detectors and models/landmarks_detectors.
+"""
 
 
 def get_haarcascade_detector():
     """
+    DEPRECATED. Instead, use class HaarcascadeFaceDetector defined in models/face_detectors/haarcascade_face_detector.py.
     Face Bounding Box Detector
     """
     haarcascade_url = "https://raw.githubusercontent.com/opencv/opencv/master/data/haarcascades/haarcascade_frontalface_alt2.xml"
@@ -45,13 +50,3 @@ def get_lbf_model():
     landmark_detector.loadModel(model_path)
 
     return landmark_detector
-
-
-def filter_lbf_model_landmarks(landmarks: list):
-    """
-    Function filters lbf model landmarks and returns only eyes and mouth's corners coordinates (6 landmarks).
-    """
-    if type(landmarks) == list:
-        landmarks = np.asarray(landmarks)
-    landmarks = landmarks.squeeze()
-    return landmarks[[36, 39, 42, 45, 48, 54]]   # 36, 39, 42, 45, 48, 54
