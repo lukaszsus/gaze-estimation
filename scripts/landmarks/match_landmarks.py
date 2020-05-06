@@ -3,7 +3,7 @@ from data_processing.mpii_face_gaze import extract_landmarks_from_annotation_fil
 from models.face_detectors.hog_face_detector import HogFaceDetector
 from models.face_landmarks_detectors import get_haarcascade_detector, get_lbf_model
 from models.landmarks_detectors.kazemi_landmarks_detector import KazemiLandmarksDetector
-from models.landmarks_detectors.lbf_landmarks_detector import filter_lbf_model_landmarks
+from models.landmarks_detectors.landmarks_detector import filter_landmarks, MOUTH_EYES_CORNERS
 from utils.landmarks import visualize_faces, visualize_landmarks
 
 
@@ -26,7 +26,7 @@ def haarcascade_lbf():
 
     # Detect landmarks on "image_gray"
     _, landmarks = landmark_detector.fit(image_gray, faces)
-    landmarks = filter_lbf_model_landmarks(landmarks)
+    landmarks = filter_landmarks(landmarks, indices=MOUTH_EYES_CORNERS)
     visualize_landmarks([landmarks], image.copy())
 
 
@@ -49,9 +49,10 @@ def hog_kazemi():
 
     # Detect landmarks on "image_gray"
     landmarks = landmark_detector.detect(image_gray, faces)
-    visualize_landmarks(landmarks, image.copy())
+    landmarks = filter_landmarks(landmarks, indices=MOUTH_EYES_CORNERS)
+    visualize_landmarks([landmarks], image.copy())
 
 
 if __name__ == "__main__":
-    # haarcascade_lbf()
+    haarcascade_lbf()
     hog_kazemi()

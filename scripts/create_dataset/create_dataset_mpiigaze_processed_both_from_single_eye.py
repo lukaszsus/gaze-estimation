@@ -1,10 +1,8 @@
 import os
 
 import numpy as np
-from data_processing.utils import mpiigaze_path_wrapper
-from scripts.create_dataset_mpiigaze_processed_both_rgb import create_dirs, parse_mpiigaze, get_all_days, \
-    get_all_jpg_files
-from scripts.create_dataset_mpiigaze_processed_one_eye import get_all_days_ids, get_all_images_ids_for_day
+from scripts.create_dataset.create_dataset_mpiigaze_processed_both_rgb import parse_mpiigaze
+from scripts.create_dataset.create_dataset_mpiigaze_processed_one_eye import get_all_days_ids, get_all_images_ids_for_day
 from settings import DATA_PATH
 from utils.metrics import convert_to_unit_vector
 

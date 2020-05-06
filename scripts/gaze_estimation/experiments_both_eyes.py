@@ -1,16 +1,7 @@
-from scripts.experiments_one_eye import perform_experiment_with_loaded_data
+from scripts.gaze_estimation.experiments_one_eye import perform_experiment_with_loaded_data
 from models.modal3_conv_net import Modal3ConvNet
 from models.modal3_conv_net_stacked import Modal3ConvNetStacked
-from utils.configs import USE_FLOAT64
-from utils.results_saver import save_parameters_to_comet, save_plots, save_table, \
-    save_weights, save_metrics_to_comet
-import os
-from settings import RESULTS_PATH
-from utils.metrics import final_test_measure_time, final_predictions
 
-import tensorflow as tf
-from tensorflow.compat.v1 import ConfigProto, InteractiveSession
-from models.modal2_conv_net import Modal2ConvNet
 from utils.datasets import data_sets
 from datetime import datetime
 

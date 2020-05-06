@@ -4,7 +4,8 @@ from data_processing.mpii_face_gaze import extract_landmarks_from_annotation_fil
 from models.face_detectors.haarcascade_face_detector import HaarcascadeFaceDetector
 from models.face_detectors.hog_face_detector import HogFaceDetector
 from models.face_landmarks_detectors import get_haarcascade_detector, get_lbf_model
-from models.landmarks_detectors.lbf_landmarks_detector import filter_lbf_model_landmarks, LbfLandmarksDetector
+from models.landmarks_detectors.lbf_landmarks_detector import LbfLandmarksDetector
+from models.landmarks_detectors.landmarks_detector import filter_landmarks, MOUTH_EYES_CORNERS
 from utils.landmarks import visualize_landmarks, visualize_faces
 
 
@@ -27,7 +28,7 @@ def haarcascade_lbf_example():
 
     # Detect landmarks on "image_gray"
     _, predicted_landmarks = landmark_detector.fit(image_gray, faces)
-    predicted_landmarks = filter_lbf_model_landmarks(predicted_landmarks)
+    predicted_landmarks = filter_landmarks(predicted_landmarks, indices=MOUTH_EYES_CORNERS)
     image_landmarks = image.copy()
     visualize_landmarks([true_landmarks], image_landmarks)
     visualize_landmarks([predicted_landmarks], image_landmarks, color=(255, 0, 0))

@@ -9,9 +9,9 @@ from tqdm import tqdm
 from data_processing.mpii_face_gaze import extract_landmarks_from_annotation_file, load_mpii_face_gaze_image
 from models.face_detectors.haarcascade_face_detector import HaarcascadeFaceDetector
 from models.face_detectors.hog_face_detector import HogFaceDetector
-from models.face_landmarks_detectors import get_lbf_model
 from models.landmarks_detectors.kazemi_landmarks_detector import KazemiLandmarksDetector
-from models.landmarks_detectors.lbf_landmarks_detector import filter_lbf_model_landmarks, LbfLandmarksDetector
+from models.landmarks_detectors.landmarks_detector import filter_landmarks, MOUTH_EYES_CORNERS
+from models.landmarks_detectors.lbf_landmarks_detector import LbfLandmarksDetector
 from settings import RESULTS_PATH
 
 
@@ -58,6 +58,7 @@ def do_landmarks_experiment(face_detector, landmark_detector, verbose=False):
                 time_counter += elapsed
 
                 # collect data
+                landmarks = filter_landmarks(landmarks, MOUTH_EYES_CORNERS)
                 predicted_landmarks.append(landmarks)
                 indices.append(i)
                 meta_data.append((person_id, file_name))
@@ -92,7 +93,7 @@ def do_experiments():
     df_results = pd.DataFrame()
     results_dir = os.path.join(RESULTS_PATH, "face_landmarks")
     os.makedirs(results_dir, exist_ok=True)
-    results_path = os.path.join(results_dir, "face_landmarks_detection.csv")
+    results_path = os.path.join(results_dir, "face_landmarks_detection_gpu.csv")
 
     for face_detector in face_detectors:
         for landmarks_detector in landmarks_detectors:

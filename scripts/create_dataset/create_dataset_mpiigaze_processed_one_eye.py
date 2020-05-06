@@ -2,7 +2,7 @@ import os
 
 import numpy as np
 from data_processing.utils import mpiigaze_path_wrapper
-from scripts.create_dataset_mpiigaze_processed_both_rgb import create_dirs, parse_mpiigaze, get_all_days, \
+from scripts.create_dataset.create_dataset_mpiigaze_processed_both_rgb import parse_mpiigaze, get_all_days, \
     get_all_jpg_files
 from settings import DATA_PATH
 

@@ -1,5 +1,6 @@
 import json
 import os
+import pickle
 
 import numpy as np
 import pandas as pd
@@ -110,6 +111,12 @@ def save_weights(dir_path, start_datetime_str, experiment_id, model):
     if not os.path.exists(subdir_path):
         os.makedirs(subdir_path, exist_ok=True)
     model.save_weights(os.path.join(subdir_path, 'weights-{}.h5'.format(str(experiment_id).zfill(4))))
+
+
+def save_weights_and_configuration(model_name: str, model):
+    dir_path = os.path.join(DATA_PATH, "models", "gaze_estimation")
+    model_weights_path = os.path.join(dir_path, model_name + ".h5")
+    model.save_weights(model_weights_path)
 
 
 def save_plots(dir_path, start_datetime_str, experiment_id, history, metrics):

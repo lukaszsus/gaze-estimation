@@ -2,6 +2,7 @@ import os
 
 import cv2
 
+from settings import MPII_FACE_GAZE_PATH
 from user_settings import MPIIGAZE_PATH, UT_MULTIVIEW_PATH
 
 
@@ -12,6 +13,11 @@ def mpiigaze_path_wrapper(path):
 
 def ut_multiview_path_wrapper(path):
     path = os.path.join(UT_MULTIVIEW_PATH, path)
+    return path
+
+
+def mpii_face_gaze_path_wrapper(path):
+    path = os.path.join(MPII_FACE_GAZE_PATH, path)
     return path
 
 

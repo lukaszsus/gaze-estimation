@@ -29,17 +29,10 @@ class LbfLandmarksDetector(LandmarksDetector):
 
     def detect(self, image, faces) -> np.ndarray:
         _, landmarks = self.landmark_detector.fit(image, faces)
-        return filter_lbf_model_landmarks(landmarks)
+        # return filter_lbf_model_landmarks(landmarks)
+        return landmarks[0]
 
     def __repr__(self):
         return "LBF"
 
 
-def filter_lbf_model_landmarks(landmarks: list):
-    """
-    Function filters lbf model landmarks and returns only eyes and mouth's corners coordinates (6 landmarks).
-    """
-    if type(landmarks) == list:
-        landmarks = np.asarray(landmarks)
-    landmarks = landmarks.squeeze()
-    return landmarks[[36, 39, 42, 45, 48, 54]]   # 36, 39, 42, 45, 48, 54

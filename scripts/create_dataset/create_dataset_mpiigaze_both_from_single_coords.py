@@ -3,11 +3,10 @@ import os
 import cv2
 import numpy as np
 from data_processing.utils import mpiigaze_path_wrapper, load_image_by_cv2
-from scripts.create_dataset_mpiigaze_processed_both_from_single_eye import resultant_angles
-from scripts.create_dataset_mpiigaze_processed_both_rgb import create_dirs, parse_mpiigaze, get_all_days, \
-    get_all_jpg_files, load_face_model, load_camera_matrix, get_img_gaze_headpose_per_eye, load_screen_size, \
+from scripts.create_dataset.create_dataset_mpiigaze_processed_both_from_single_eye import resultant_angles
+from scripts.create_dataset.create_dataset_mpiigaze_processed_both_rgb import load_face_model, load_camera_matrix, get_img_gaze_headpose_per_eye, load_screen_size, \
     norm_coords, norm_landmarks
-from scripts.create_dataset_mpiigaze_processed_one_eye import get_all_days_ids, get_all_images_ids_for_day
+from scripts.create_dataset.create_dataset_mpiigaze_processed_one_eye import get_all_days_ids, get_all_images_ids_for_day
 from settings import DATA_PATH
 
 

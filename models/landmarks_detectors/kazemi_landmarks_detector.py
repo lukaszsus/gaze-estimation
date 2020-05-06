@@ -27,7 +27,8 @@ class KazemiLandmarksDetector(LandmarksDetector):
         faces = list(map(lambda x: [x[0], x[1], x[0] + x[2], x[1] + x[3]], faces))
         for face in faces:
             shape = self.predictor(image, dlib.rectangle(face[0], face[1], face[2], face[3]))
-            shape = list(map(shape.part, [36, 39, 42, 45, 48, 54]))
+            # shape = list(map(shape.part, [36, 39, 42, 45, 48, 54]))
+            shape = list(map(shape.part, range(shape.num_parts)))
             shape = list(map(lambda p: [p.x, p.y], shape))
             landmarks.append(shape)
         return np.asarray(landmarks)

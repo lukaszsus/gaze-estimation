@@ -1,14 +1,15 @@
-from utils.results_saver import save_parameters_to_comet, save_plots, save_table, save_metrics_to_comet
+from utils.configs import USE_FLOAT64
+from utils.results_saver import save_parameters_to_comet, save_plots, save_table, \
+    save_metrics_to_comet
 import os
-
-from models.modal3_conv_net import Modal3ConvNet
 from settings import RESULTS_PATH
-from utils.datasets import data_sets
-from datetime import datetime
+from utils.metrics import final_test_measure_time, final_predictions
 
-from utils.metrics import final_predictions, final_test_measure_time
 import tensorflow as tf
 from tensorflow.compat.v1 import ConfigProto, InteractiveSession
+from models.modal2_conv_net import Modal2ConvNet
+from utils.datasets import data_sets
+from datetime import datetime
 
 USE_GPU = False  # just for logging some metrics correctly (for example forward_pass_time)
 """
@@ -19,6 +20,12 @@ config = ConfigProto()
 config.gpu_options.allow_growth = True
 session = InteractiveSession(config=config)
 AUTOTUNE = tf.data.experimental.AUTOTUNE
+
+
+if USE_FLOAT64:
+    tf.keras.backend.set_floatx('float64')
+# else:
+#     tf.keras.backend.set_floatx('float32')
 
 
 def perform_experiment_with_loaded_data(experiment_name,
@@ -67,7 +74,7 @@ def perform_experiment_with_loaded_data(experiment_name,
     labels, predictions = final_predictions(model, test_dataset)
     forward_pass_time = final_test_measure_time(model=model, test_dataset=test_dataset)
     save_metrics_to_comet(experiment, labels=labels, predictions=predictions, test_subject_ids=test_subject_ids,
-                          forward_pass_time=forward_pass_time, use_gpu=use_gpu, angle_error=False)
+                          forward_pass_time=forward_pass_time, use_gpu=use_gpu)
 
     if save_locally:
         metrics = ["loss", "mean_absolute_error", "mean_squared_error", "mean_absolute_error_0",
@@ -84,21 +91,20 @@ def perform_experiment_with_loaded_data(experiment_name,
 
 def main_experiments():
     # hyper parameters
-    experiment_name = 'mpiigaze_both_landmarks_coords'
+    experiment_name = "mpiigaze_one_eye"
     track_angle_error = True
     experiment_id = 0
     start_datetime = datetime.now()
     # people_ids = list(range(15))
     people_ids = [None]
-    experiments_data_set_names = ['mpiigaze_both_landmarks_coords_grayscale',
-                                  'mpiigaze_both_landmarks_coords_rgb']
+    experiments_data_set_names = ['mpiigaze_one_eye_grayscale', 'mpiigaze_one_eye_rgb']     # ['hysts_mpii_gaze_all_together']
     val_split = 0.2
-    models_cls = [Modal3ConvNet]
+    models_cls = [Modal2ConvNet]
     num_epochs = [30]
     batch_sizes = [128]
-    optimizers_names = ['Adam']
-    learning_rates = [0.001, 0.0001]
-    losses_names = ['mae']
+    optimizers_names = ['Adam']     # , 'SGD'
+    learning_rates = [0.003, 0.001, 0.0001]     # , 0.01
+    losses_names = ['mae']          # 'mse',
     conv_sizes_list = [({"n_filters": 16, "filter_size": (5, 5), "padding": "valid", "stride": (1, 1),
                          "pool": "avg", "pool_size": (2, 2), "pool_stride": (2, 2)},
                         {"n_filters": 16, "filter_size": (5, 5), "padding": "valid", "stride": (1, 1),
@@ -111,9 +117,23 @@ def main_experiments():
                         {"n_filters": 16, "filter_size": (3, 3), "padding": "valid", "stride": (1, 1),
                          "pool": None, "pool_size": None, "pool_stride": None},
                         {"n_filters": 16, "filter_size": (3, 3), "padding": "valid", "stride": (1, 1),
+                         "pool": "avg", "pool_size": (2, 2), "pool_stride": (2, 2)}),
+
+                       ({"n_filters": 16, "filter_size": (3, 3), "padding": "valid", "stride": (1, 1),
+                         "pool": None, "pool_size": None, "pool_stride": None},
+                        {"n_filters": 16, "filter_size": (3, 3), "padding": "valid", "stride": (1, 1),
+                         "pool": "avg", "pool_size": (2, 2), "pool_stride": (2, 2)},
+                        {"n_filters": 16, "filter_size": (3, 3), "padding": "valid", "stride": (1, 1),
+                         "pool": None, "pool_size": None, "pool_stride": None},
+                        {"n_filters": 16, "filter_size": (3, 3), "padding": "valid", "stride": (1, 1),
+                         "pool": None, "pool_size": None, "pool_stride": None},
+                        {"n_filters": 16, "filter_size": (3, 3), "padding": "valid", "stride": (1, 1),
+                         "pool": None, "pool_size": None, "pool_stride": None},
+                        {"n_filters": 16, "filter_size": (3, 3), "padding": "valid", "stride": (1, 1),
                          "pool": "avg", "pool_size": (2, 2), "pool_stride": (2, 2)})
                        ]
     dense_sizes_list = [(256, 64, 2),
+                        (256, 128, 64, 2),
                         (512, 128, 2)]
     dropouts = [0.1]
 
