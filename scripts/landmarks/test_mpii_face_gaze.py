@@ -19,8 +19,8 @@ def test_load_mpii_face_gaze_image():
                 print(f"Hit person: {person_id} file: {counter}")
             counter += 1
 
-    print(hit_counter / counter)
     print(hit_counter)
+    print(counter)
 
     person_id = 0
     file_names, landmarks = extract_landmarks_from_annotation_file(person_id)

@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 import cv2
 from PIL import Image
@@ -8,6 +10,7 @@ from models.face_detectors.hog_face_detector import HogFaceDetector
 from models.landmarks_detectors.kazemi_landmarks_detector import KazemiLandmarksDetector
 from models.landmarks_detectors.landmarks_detector import EYES_LANDMARKS
 from models.landmarks_detectors.lbf_landmarks_detector import LbfLandmarksDetector
+from settings import FOR_THESIS_DIR
 from utils.landmarks import visualize_landmarks_mpii_gaze_format, visualize_landmarks
 
 
@@ -29,7 +32,7 @@ def haarcascade_lbf(image):
 
     # detect landmarks
     landmarks = landmarks_detector.detect(image_gray, faces)
-    visualize_landmarks_mpii_gaze_format(landmarks[:, EYES_LANDMARKS, :], image.copy(), numbers=True)
+    visualize_landmarks_mpii_gaze_format(landmarks[:, EYES_LANDMARKS, :], image, numbers=False)
 
 
 if __name__ == "__main__":
@@ -48,3 +51,6 @@ if __name__ == "__main__":
     # visualize_landmarks_mpii_gaze_format(landmarks, im, numbers=True)
 
     haarcascade_lbf(im)
+
+    im = Image.fromarray(im)
+    im.save(os.path.join(FOR_THESIS_DIR, "eye_landmarks.png"))

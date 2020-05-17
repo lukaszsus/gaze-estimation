@@ -15,7 +15,7 @@ from models.landmarks_detectors.lbf_landmarks_detector import LbfLandmarksDetect
 from settings import RESULTS_PATH
 
 
-def do_landmarks_experiment(face_detector, landmark_detector, verbose=False):
+def do_landmarks_experiment(face_detector, landmark_detector, equalize_hist, skip_face_detection, verbose=False):
     meta_data = list()
     all_distances = list()
 
@@ -42,15 +42,28 @@ def do_landmarks_experiment(face_detector, landmark_detector, verbose=False):
             if image is not None:  # many annotations do not have their photos in dataset
                 start_time = time.time()
 
+                # convert to grayscale
                 image_gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
-                faces = face_detector.detect(image_gray)
 
-                if len(faces) > 1:  # Take only first face
-                    face_false_positive += (len(faces) - 1)
-                    faces = faces[0].reshape(1, -1)
-                elif len(faces) == 0:  # No face detected -> assume that face is on the full image
-                    face_false_negative += 1
-                    continue
+                # equalize histogram if face detector is HOG, do it after face detection
+                if equalize_hist and not str(face_detector) == "HOG":
+                    image_gray = cv2.equalizeHist(image_gray)
+
+                if not skip_face_detection:
+                    # detect faces
+                    faces = face_detector.detect(image_gray)  # returns list of list
+
+                    if len(faces) > 1:  # Take only first face
+                        face_false_positive += (len(faces) - 1)
+                        faces = faces[0].reshape(1, -1)
+                    elif len(faces) == 0:  # No face detected -> assume that face is on the full image
+                        face_false_negative += 1
+                        continue
+                else:
+                    faces = np.asarray([[0, 0, image_gray.shape[0], image_gray.shape[1]]])
+
+                if equalize_hist and str(face_detector) == "HOG":
+                    image_gray = cv2.equalizeHist(image_gray)
 
                 landmarks = landmark_detector.detect(image_gray, faces)
 
@@ -87,22 +100,30 @@ def do_landmarks_experiment(face_detector, landmark_detector, verbose=False):
 
 
 def do_experiments():
-    face_detectors = [HaarcascadeFaceDetector(), HogFaceDetector()]
+    face_detectors = [HogFaceDetector()]    # HaarcascadeFaceDetector(),
     landmarks_detectors = [LbfLandmarksDetector(), KazemiLandmarksDetector()]
+    equalize_hist_values = [True]   # , False
+    skip_face_detection_values = [False]    # True,
 
     df_results = pd.DataFrame()
     results_dir = os.path.join(RESULTS_PATH, "face_landmarks")
     os.makedirs(results_dir, exist_ok=True)
-    results_path = os.path.join(results_dir, "face_landmarks_detection_gpu.csv")
+    results_path = os.path.join(results_dir, "face_landmarks_detection_hog.csv")
 
     for face_detector in face_detectors:
         for landmarks_detector in landmarks_detectors:
-            row = {"face_detector": str(face_detector),
-                   "landmarks_detector": str(landmarks_detector)}
-            results = do_landmarks_experiment(face_detector, landmarks_detector)
-            row.update(results)
-            df_results = df_results.append([row], ignore_index=True)
-            df_results.to_csv(results_path, index=False)
+            for equalize_hist in equalize_hist_values:
+                for skip_face_detection in skip_face_detection_values:
+                    row = {"face_detector": str(face_detector),
+                           "landmarks_detector": str(landmarks_detector),
+                           "equalize_hist": str(equalize_hist),
+                           "skip_face_detection": str(skip_face_detection)}
+
+                    results = do_landmarks_experiment(face_detector, landmarks_detector, equalize_hist,
+                                                      skip_face_detection)
+                    row.update(results)
+                    df_results = df_results.append([row], ignore_index=True)
+                    df_results.to_csv(results_path, index=False)
 
 
 if __name__ == "__main__":

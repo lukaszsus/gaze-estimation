@@ -6,7 +6,7 @@ import numpy as np
 import scipy.io
 
 from data_processing.mpiigaze_normalize_image import mpii_gaze_normalize_image
-from data_processing.utils import load_image_by_cv2, mpiigaze_path_wrapper
+from data_processing.utils import load_image_by_cv2, mpiigaze_path_wrapper, mpii_face_gaze_path_wrapper
 from tqdm import tqdm
 
 from settings import DATA_PATH
@@ -31,14 +31,17 @@ def load_camera_matrix(path):
     return matdata["cameraMatrix"]
 
 
-def load_screen_size(path, type="pixel"):
+def load_screen_size(path, type="pixel", face=False):
     """
-
     :param path:
     :param type: 'pixel' or 'mm' (millimeter)
     :return:
     """
-    path = mpiigaze_path_wrapper(path)
+    if face:
+        path = mpii_face_gaze_path_wrapper(path)
+    else:
+        path = mpiigaze_path_wrapper(path)
+
     matdata = scipy.io.loadmat(path, struct_as_record=False, squeeze_me=True)
     h, w = matdata[f"height_{type}"], matdata[f"width_{type}"]
     return (h, w)

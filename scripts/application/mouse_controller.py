@@ -7,8 +7,22 @@ from application.utils import get_screen_size, get_avg_camera_matrix
 from models.face_detectors.hog_face_detector import HogFaceDetector
 from models.landmarks_detectors.kazemi_landmarks_detector import KazemiLandmarksDetector
 
+
+def set_max_camera_res(cam):
+    HIGH_VALUE = 10000
+
+    cam.set(cv2.CAP_PROP_FRAME_WIDTH, HIGH_VALUE)
+    cam.set(cv2.CAP_PROP_FRAME_HEIGHT, HIGH_VALUE)
+
+    width = int(cam.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    print(width, height)
+    return cam
+
+
 if __name__ == "__main__":
     cam = cv2.VideoCapture(0)
+    cam = set_max_camera_res(cam)
     mouse = Controller()
 
     eye_image_width = 60
@@ -30,8 +44,8 @@ if __name__ == "__main__":
     predictions = list()
     for i in range(200):
         s, img = cam.read()
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         if s:  # frame captured without any errors
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
             prediction = pipeline.predict(img)
             if prediction is not None:
                 predictions.append(prediction)

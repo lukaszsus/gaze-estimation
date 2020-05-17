@@ -7,6 +7,7 @@ MPIIGAZE_PATH = None
 UT_MULTIVIEW_PATH = None
 MPII_FACE_GAZE_PATH = None
 PHOTO_TAKER_DATA_PATH = None
+FOR_THESIS_DIR = None
 
 try:
     from user_settings import *

@@ -28,8 +28,8 @@ def processed_both_eyes_rgb(im, face_model, camera_matrix, headpose_hr, headpose
     return right_eye_img, left_eye_img, headpose
 
 
-def parse_both_eyes_rgb_landmark_coords(im, face_model, camera_matrix, headpose_hr, headpose_ht,
-                                        eye_image_width=60, eye_image_height=36):
+def parse_both_eyes_rgb_landmark(im, face_model, camera_matrix, headpose_hr, headpose_ht,
+                                 eye_image_width=60, eye_image_height=36):
     """
     Very similar to parse_mpiigaze_landmark_coords but without gaze (answers in general) and landmarks.
     """

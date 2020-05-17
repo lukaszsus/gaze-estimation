@@ -28,13 +28,15 @@ def _load_one_person(dataset_name, person, grayscale):
     return right_images, left_images, poses, gazes
 
 
-def _load_all_people(dataset_name, grayscale):
+def _load_all_people(dataset_name, grayscale, leave_person_id=None):
     right_images_all = list()
     left_images_all = list()
     poses_all = list()
     gazes_all = list()
     subject_ids = list()
     for i in range(NUMBER_OF_SUBJECTS):
+        if leave_person_id is not None and leave_person_id == i:
+            continue
         right_images, left_images, poses, gazes = _load_one_person(dataset_name, i, grayscale)
         right_images_all.append(right_images)
         left_images_all.append(left_images)
@@ -69,6 +71,26 @@ def load_mpiigaze_train_test_ds_both_from_single(dataset_name, person_id, val_sp
          headpose_train, headpose_test,
          y_train, y_test) = train_test_split(right_images, left_images, poses, gazes, test_size=val_split,
                                              random_state=42)
+
+    train_dataset = prepare_dataset((right_eye_train, left_eye_train, headpose_train), y_train, batch_size)
+    # don't shuffle test dataset to have consistent outcomes
+    test_dataset = prepare_dataset((right_eye_test, left_eye_test, headpose_test), y_test, batch_size, shuffle=False)
+
+    return train_dataset, test_dataset, test_subject_ids
+
+
+############## LEAVE ONE OUT
+
+def load_mpiigaze_train_test_ds_both_leave_one_out(dataset_name, person_id, val_split=0.2, batch_size=128,
+                                                    grayscale=True):
+    """
+    val_split argument only for consistent function interface
+    """
+    right_eye_train, left_eye_train, headpose_train, y_train, train_subject_ids = _load_all_people(dataset_name,
+                                                                                                   grayscale, person_id)
+    right_eye_test, left_eye_test, headpose_test, y_test = _load_one_person(dataset_name, person_id, grayscale)
+
+    test_subject_ids = np.asarray([person_id] * len(y_test))
 
     train_dataset = prepare_dataset((right_eye_train, left_eye_train, headpose_train), y_train, batch_size)
     # don't shuffle test dataset to have consistent outcomes

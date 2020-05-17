@@ -3,7 +3,7 @@ import numpy as np
 
 from application.data_processing import convert_to_model_format
 from data_processing.head_pose import estimate_head_pose
-from data_processing.algebraic_transformations import processed_both_eyes_rgb, parse_both_eyes_rgb_landmark_coords
+from data_processing.algebraic_transformations import processed_both_eyes_rgb, parse_both_eyes_rgb_landmark
 from models.face_detectors.face_detector import FaceDetector
 from models.landmarks_detectors.landmarks_detector import LandmarksDetector, filter_landmarks, \
     MOUTH_EYES_CORNERS_HEAD_POSE, EYES_LANDMARKS
@@ -111,11 +111,11 @@ class Pipeline:
         headpose_hr, headpose_ht = estimate_head_pose(self.image, landmarks_head_pose, self.camera_matrix,
                                                       face_model_points=np.transpose(self.face_model))
 
-        data = parse_both_eyes_rgb_landmark_coords(self.image, self.face_model,
-                                                   self.camera_matrix,
-                                                   headpose_hr, headpose_ht,
-                                                   eye_image_width=self.eye_image_width,
-                                                   eye_image_height=self.eye_image_height)
+        data = parse_both_eyes_rgb_landmark(self.image, self.face_model,
+                                            self.camera_matrix,
+                                            headpose_hr, headpose_ht,
+                                            eye_image_width=self.eye_image_width,
+                                            eye_image_height=self.eye_image_height)
 
         # additional landmarks
         landmarks_eyes = filter_landmarks(self.landmarks, EYES_LANDMARKS)

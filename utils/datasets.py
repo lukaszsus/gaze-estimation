@@ -1,9 +1,11 @@
 from functools import partial
 
 from data_loader.hysts import load_hysts_mpiigaze_train_test_ds
-from data_loader.mpiigaze_both_from_single import load_mpiigaze_train_test_ds_both_from_single
+from data_loader.mpiigaze_both_from_single import load_mpiigaze_train_test_ds_both_from_single, \
+    load_mpiigaze_train_test_ds_both_leave_one_out
 from data_loader.mpiigaze_processed_loader import load_mpiigaze_train_test_2_angles_headpose
-from data_loader.mpiigaze_processed_one_eye import load_mpiigaze_train_test_ds_one_eye
+from data_loader.mpiigaze_processed_one_eye import load_mpiigaze_train_test_ds_one_eye, \
+    load_mpiigaze_train_test_ds_one_eye_leave_one_out
 
 data_sets = {
     "hysts_mpii_gaze": {"name": "hysts_mpii_gaze",
@@ -119,5 +121,28 @@ data_sets = {
                                            "load_function": partial(load_mpiigaze_train_test_ds_both_from_single,
                                                                     dataset_name="mpiigaze_both_landmarks_coords",
                                                                     grayscale=False)},
-
+    "mpiigaze_one_eye_grayscale_leave_one_out": {"name": "mpiigaze_one_eye_grayscale_leave_one_out",
+                                   "path": "mpiigaze_processed",
+                                   "dataset_size": "3000 per subject",
+                                   "input": ["eye_img", "headpose_2_angles"],
+                                   "eye_im_size": (36, 60),
+                                   "grayscale": True,
+                                   "headpose_size": 2,
+                                   "output": "angles",
+                                   "output_size": 2,
+                                   "load_function": partial(load_mpiigaze_train_test_ds_one_eye_leave_one_out,
+                                                            dataset_name="mpiigaze_processed_one_eye_like_hysts",
+                                                            grayscale=True)},
+    "mpiigaze_both_grayscale_leave_one_out": {"name": "mpiigaze_both_from_single_grayscale",
+                                            "path": "mpiigaze_processed_both_rgb",
+                                            "dataset_size": "3000 per subject",
+                                            "input": ["right_eye_img", "left_eye_img", "headpose_6_angles"],
+                                            "eye_im_size": (36, 60),
+                                            "grayscale": True,
+                                            "headpose_size": 6,
+                                            "output": "angles",
+                                            "output_size": 2,
+                                            "load_function": partial(load_mpiigaze_train_test_ds_both_leave_one_out,
+                                                                     dataset_name="mpiigaze_processed_both_rgb",
+                                                                     grayscale=True)},
 }

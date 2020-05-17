@@ -4,8 +4,9 @@ import cv2
 import numpy as np
 from data_processing.utils import mpiigaze_path_wrapper, load_image_by_cv2
 from scripts.create_dataset.create_dataset_mpiigaze_processed_both_from_single_eye import resultant_angles
-from scripts.create_dataset.create_dataset_mpiigaze_processed_both_rgb import load_face_model, load_camera_matrix, get_img_gaze_headpose_per_eye, load_screen_size, \
-    norm_coords, norm_landmarks
+from scripts.create_dataset.create_dataset_mpiigaze_processed_both_rgb import load_face_model, load_camera_matrix, \
+    get_img_gaze_headpose_per_eye, load_screen_size, \
+    norm_coords, norm_landmarks, load_annotation
 from scripts.create_dataset.create_dataset_mpiigaze_processed_one_eye import get_all_days_ids, get_all_images_ids_for_day
 from settings import DATA_PATH
 
@@ -17,7 +18,8 @@ def parse_mpiigaze_landmark_coords(person_id: int, day: int, img_n: int, eye_ima
     day_str = str(day).zfill(2)
     img_n_str = str(img_n).zfill(4)
     im = load_image_by_cv2(mpiigaze_path_wrapper(f"Data/Original/p{person_id_str}/day{day_str}/{img_n_str}.jpg"))
-    annotation = np.loadtxt(mpiigaze_path_wrapper(f"Data/Original/p{person_id_str}/day{day_str}/annotation.txt"))
+    ann_path = mpiigaze_path_wrapper(f"Data/Original/p{person_id_str}/day{day_str}/annotation.txt")
+    annotation = load_annotation(ann_path)
     camera_matrix = load_camera_matrix(path=f"Data/Original/p{person_id_str}/Calibration/Camera.mat")
 
     im_height, im_width, _ = im.shape
@@ -98,7 +100,7 @@ def create_mpiigaze_full_transformation_both_landmarks_coords(dataset_name, limi
     if not os.path.exists(dataset_path):
         os.mkdir(dataset_path)
 
-    for person_id in range(15):
+    for person_id in range(1, 15):
         print(f"person id: {person_id}")
         data = prepare_data_for_one_person(person_id, limit=limit)
         file_name = f"p{str(person_id).zfill(2)}.npz"
@@ -109,4 +111,5 @@ def create_mpiigaze_full_transformation_both_landmarks_coords(dataset_name, limi
 
 
 if __name__ == '__main__':
-    create_mpiigaze_full_transformation_both_landmarks_coords(dataset_name="mpiigaze_both_landmarks_coords", limit=3000)
+    create_mpiigaze_full_transformation_both_landmarks_coords(dataset_name="mpiigaze_both_landmarks_coords_full",
+                                                              limit=100000)
