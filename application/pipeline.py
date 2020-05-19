@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+from PIL import Image
 
 from application.data_processing import convert_to_model_format
 from data_processing.head_pose import estimate_head_pose
@@ -107,6 +108,9 @@ class Pipeline:
 
     def _algebraic_tranformations(self):
         landmarks_head_pose = filter_landmarks(self.landmarks, indices=MOUTH_EYES_CORNERS_HEAD_POSE)
+
+        # if CHANGE_EYES:
+        #     landmarks_head_pose = landmarks_head_pose[[3, 2, 1, 0, 4, 5]]
 
         headpose_hr, headpose_ht = estimate_head_pose(self.image, landmarks_head_pose, self.camera_matrix,
                                                       face_model_points=np.transpose(self.face_model))

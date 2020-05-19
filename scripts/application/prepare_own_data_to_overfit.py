@@ -4,10 +4,8 @@ import numpy as np
 
 from application.pipeline import Pipeline
 from application.utils import get_avg_camera_matrix, get_screen_size
-from data_processing.utils import mpiigaze_path_wrapper, mpii_face_gaze_path_wrapper, load_image_by_cv2
 from models.face_detectors.hog_face_detector import HogFaceDetector
 from models.landmarks_detectors.kazemi_landmarks_detector import KazemiLandmarksDetector
-from scripts.create_dataset.create_dataset_mpiigaze_processed_both_rgb import load_camera_matrix, load_screen_size
 from settings import PHOTO_TAKER_DATA_PATH
 
 

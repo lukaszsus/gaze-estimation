@@ -1,61 +1,44 @@
-from scripts.gaze_estimation.experiments_one_eye import perform_experiment_with_loaded_data
-from models.modal3_conv_net import Modal3ConvNet
-from models.modal3_conv_net_stacked import Modal3ConvNetStacked
-
-from utils.datasets import data_sets
 from datetime import datetime
+from scripts.gaze_estimation.experiments_both_landmarks_coords import perform_experiment_with_loaded_data
+from models.modal3_conv_net import Modal3ConvNet
+from utils.datasets import data_sets
+import tensorflow as tf
+from tensorflow.compat.v1 import ConfigProto, InteractiveSession
 
-USE_GPU = False  # just for logging some metrics correctly (for example forward_pass_time)
+# USE_GPU = False  # just for logging some metrics correctly (for example forward_pass_time)
+"""
+That's for GPU training and maintaining one session and nice cuda lib loading.
+"""
+USE_GPU = True
+config = ConfigProto()
+config.gpu_options.allow_growth = True
+session = InteractiveSession(config=config)
+AUTOTUNE = tf.data.experimental.AUTOTUNE
 
 
-def main_experiments():
+def experiments_one_person():
     # hyper parameters
-    experiment_name = 'mpiigaze_both_from_single'
+    experiment_name = 'own_dataset_one_person'
     track_angle_error = True
     experiment_id = 0
     start_datetime = datetime.now()
-    # people_ids = list(range(15))
-    people_ids = [None]
-    # people_ids = [0]
-    experiments_data_set_names = ['mpiigaze_both_from_single_grayscale',
-                                  'mpiigaze_both_from_single_rgb']
+    people_ids = ["xx"]
+    experiments_data_set_names = ['own_dataset_one_person']
     val_split = 0.2
-    models_cls = [Modal3ConvNet, Modal3ConvNetStacked]
-    num_epochs = [30]
+    models_cls = [Modal3ConvNet]
+    num_epochs = [50]
     batch_sizes = [128]
     optimizers_names = ['Adam']
-    learning_rates = [0.001, 0.0001]
+    learning_rates = [0.001]
     losses_names = ['mae']
-    conv_sizes_list = [({"n_filters": 16, "filter_size": (5, 5), "padding": "valid", "stride": (1, 1),
-                         "pool": "avg", "pool_size": (2, 2), "pool_stride": (2, 2)},
-                        {"n_filters": 16, "filter_size": (5, 5), "padding": "valid", "stride": (1, 1),
-                         "pool": None, "pool_size": None, "pool_stride": None},
-                        {"n_filters": 16, "filter_size": (5, 5), "padding": "valid", "stride": (1, 1),
-                         "pool": "avg", "pool_size": (2, 2), "pool_stride": (2, 2)}),
-
-                       ({"n_filters": 16, "filter_size": (3, 3), "padding": "valid", "stride": (1, 1),
+    conv_sizes_list = [({"n_filters": 16, "filter_size": (3, 3), "padding": "valid", "stride": (1, 1),
                          "pool": "avg", "pool_size": (2, 2), "pool_stride": (2, 2)},
                         {"n_filters": 16, "filter_size": (3, 3), "padding": "valid", "stride": (1, 1),
                          "pool": None, "pool_size": None, "pool_stride": None},
                         {"n_filters": 16, "filter_size": (3, 3), "padding": "valid", "stride": (1, 1),
                          "pool": "avg", "pool_size": (2, 2), "pool_stride": (2, 2)})
-                       # ,
-                       # ({"n_filters": 16, "filter_size": (3, 3), "padding": "valid", "stride": (1, 1),
-                       #   "pool": None, "pool_size": None, "pool_stride": None},
-                       #  {"n_filters": 16, "filter_size": (3, 3), "padding": "valid", "stride": (1, 1),
-                       #   "pool": "avg", "pool_size": (2, 2), "pool_stride": (2, 2)},
-                       #  {"n_filters": 16, "filter_size": (3, 3), "padding": "valid", "stride": (1, 1),
-                       #   "pool": None, "pool_size": None, "pool_stride": None},
-                       #  {"n_filters": 16, "filter_size": (3, 3), "padding": "valid", "stride": (1, 1),
-                       #   "pool": None, "pool_size": None, "pool_stride": None},
-                       #  {"n_filters": 16, "filter_size": (3, 3), "padding": "valid", "stride": (1, 1),
-                       #   "pool": None, "pool_size": None, "pool_stride": None},
-                       #  {"n_filters": 16, "filter_size": (3, 3), "padding": "valid", "stride": (1, 1),
-                       #   "pool": "avg", "pool_size": (2, 2), "pool_stride": (2, 2)})
                        ]
-    dense_sizes_list = [(256, 64, 2),
-                        # (256, 128, 64, 2),
-                        (512, 128, 2)]
+    dense_sizes_list = [(512, 128, 2)]
     dropouts = [0.1]
 
     for person_id in people_ids:
@@ -100,17 +83,17 @@ def main_experiments():
                 del test_dataset
 
 
-def experiments_leave_one_out():
+def experiments_own_mpiigaze():
     # hyper parameters
-    experiment_name = 'mpiigaze_both_leave_one_out'
+    experiment_name = 'own_dataset_mpii_gaze'
     track_angle_error = True
     experiment_id = 0
     start_datetime = datetime.now()
-    people_ids = list(range(0, 15))
-    experiments_data_set_names = ['mpiigaze_both_grayscale_leave_one_out']
-    val_split = None
-    models_cls = [Modal3ConvNet, Modal3ConvNetStacked]
-    num_epochs = [30]
+    people_ids = [None]
+    experiments_data_set_names = ['own_dataset_mpii_gaze']
+    val_split = 0.2
+    models_cls = [Modal3ConvNet]
+    num_epochs = [50]
     batch_sizes = [128]
     optimizers_names = ['Adam']
     learning_rates = [0.001]
@@ -120,9 +103,10 @@ def experiments_leave_one_out():
                         {"n_filters": 16, "filter_size": (3, 3), "padding": "valid", "stride": (1, 1),
                          "pool": None, "pool_size": None, "pool_stride": None},
                         {"n_filters": 16, "filter_size": (3, 3), "padding": "valid", "stride": (1, 1),
-                         "pool": "avg", "pool_size": (2, 2), "pool_stride": (2, 2)})]
+                         "pool": "avg", "pool_size": (2, 2), "pool_stride": (2, 2)})
+                       ]
     dense_sizes_list = [(512, 128, 2)]
-    dropouts = [0.1, 0.2]
+    dropouts = [0.1]
 
     for person_id in people_ids:
         for batch_size in batch_sizes:
@@ -166,6 +150,6 @@ def experiments_leave_one_out():
                 del test_dataset
 
 
-if __name__ == '__main__':
-    # main_experiments()
-    experiments_leave_one_out()
+if __name__ == "__main__":
+    # experiments_one_person()
+    experiments_own_mpiigaze()

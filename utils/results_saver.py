@@ -1,13 +1,11 @@
 import json
 import os
-import pickle
 
 import numpy as np
 import pandas as pd
-from datetime import datetime
 from comet_ml import Experiment
 
-from settings import DATA_PATH, RESULTS_PATH
+from settings import DATA_PATH
 from utils.configs import USE_FLOAT64
 from utils.metrics import compute_angle_error
 from utils.plots import plot_metrics

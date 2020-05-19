@@ -11,9 +11,13 @@ if __name__ == "__main__":
     eye_image_width = 60
     eye_image_height = 36
 
-    person_id_str = "00"
-    day = "day01"
-    im_file = "0484.jpg"
+    # person_id_str = "00"
+    # day = "day01"
+    # im_file = "0484.jpg"
+
+    person_id_str = "14"
+    day = "day04"
+    im_file = "0008.jpg"
 
     camera_matrix = load_camera_matrix(path=f"Data/Original/p{person_id_str}/Calibration/Camera.mat")
     screen_size = load_screen_size(path=f"Data/Original/p{person_id_str}/Calibration/screenSize.mat")

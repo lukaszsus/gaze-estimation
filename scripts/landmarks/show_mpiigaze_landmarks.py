@@ -48,9 +48,9 @@ if __name__ == "__main__":
     landmarks = np.reshape(annotation[8 - 1, 0:24], (1, -1, 2))
     landmarks = landmarks.astype(np.int)
 
-    # visualize_landmarks_mpii_gaze_format(landmarks, im, numbers=True)
+    visualize_landmarks_mpii_gaze_format(landmarks, im, numbers=True)
 
-    haarcascade_lbf(im)
+    # haarcascade_lbf(im)
 
     im = Image.fromarray(im)
     im.save(os.path.join(FOR_THESIS_DIR, "eye_landmarks.png"))

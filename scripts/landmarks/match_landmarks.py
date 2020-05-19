@@ -27,7 +27,7 @@ def haarcascade_lbf():
     # Detect landmarks on "image_gray"
     _, landmarks = landmark_detector.fit(image_gray, faces)
     landmarks = filter_landmarks(landmarks, indices=MOUTH_EYES_CORNERS)
-    visualize_landmarks([landmarks], image.copy())
+    visualize_landmarks([landmarks], image.copy(), numbers=True)
 
 
 def hog_kazemi():
@@ -50,7 +50,7 @@ def hog_kazemi():
     # Detect landmarks on "image_gray"
     landmarks = landmark_detector.detect(image_gray, faces)
     landmarks = filter_landmarks(landmarks, indices=MOUTH_EYES_CORNERS)
-    visualize_landmarks([landmarks], image.copy())
+    visualize_landmarks([landmarks], image.copy(), numbers=True)
 
 
 if __name__ == "__main__":
