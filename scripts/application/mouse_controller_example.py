@@ -25,14 +25,14 @@ if __name__ == "__main__":
     pipeline = create_pipeline(model_name="own_mpiigaze")
 
     predictions = list()
-    for i in range(200):
-        s, img = cam.read()
-        if s:  # frame captured without any errors
-            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-            prediction = pipeline.predict(img)
-            if prediction is not None:
-                prediction = prediction.squeeze()
-                mouse.position = (int(prediction[1]), int(prediction[0]))
+    s, img = cam.read()
+    if s:  # frame captured without any errors
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        prediction = pipeline.predict(img)
+        if prediction is not None:
+            prediction = prediction.squeeze()
+            print(mouse.position)
+            print(prediction[1], prediction[0])
             #     predictions.append(prediction)
             #
             # if i % 10 == 9 and len(predictions) > 5:

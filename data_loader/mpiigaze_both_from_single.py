@@ -128,13 +128,17 @@ def load_mpiigaze_train_test_ds_both_leave_one_out_reject_suspicious(dataset_nam
     return train_dataset, test_dataset, test_subject_ids
 
 
-def _load_all_people_reject_suspicious(dataset_name, grayscale, leave_person_id=None):
+def _load_all_people_reject_suspicious(dataset_name, grayscale, leave_person_id=None, subjects: list = None):
     right_images_all = list()
     left_images_all = list()
     poses_all = list()
     gazes_all = list()
     subject_ids = list()
-    for i in range(NUMBER_OF_SUBJECTS):
+
+    if subjects is None:
+        subjects = list(range(NUMBER_OF_SUBJECTS))
+
+    for i in subjects:
         if leave_person_id is not None and leave_person_id == i:
             continue
 

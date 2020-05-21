@@ -9,6 +9,7 @@ from settings import DATA_PATH
 from utils.configs import USE_FLOAT64
 from utils.metrics import compute_angle_error
 from utils.plots import plot_metrics
+from sklearn.metrics import mean_absolute_error
 
 
 def save_parameters_to_comet(experiment_name: str,
@@ -46,7 +47,7 @@ def save_parameters_to_comet(experiment_name: str,
 
 
 def save_metrics_to_comet(experiment, labels, predictions, test_subject_ids, forward_pass_time, use_gpu,
-                          angle_error=True):
+                          angle_error=True, error_per_person=False):
     if angle_error:
         angle_error = np.mean(compute_angle_error(labels=labels, predictions=predictions))
         experiment.log_metric("test_angle_error_degrees", angle_error)
@@ -57,6 +58,14 @@ def save_metrics_to_comet(experiment, labels, predictions, test_subject_ids, for
                 angle_error = np.mean(compute_angle_error(labels=labels[test_subject_ids == id],
                                                           predictions=predictions[test_subject_ids == id]))
                 experiment.log_metric(f"test_angle_error_degrees_{id}", angle_error)
+
+    if error_per_person and test_subject_ids is not None:
+        unique_subject_ids = np.unique(test_subject_ids)
+        for id in unique_subject_ids:
+            mae = mean_absolute_error(labels[test_subject_ids == id],
+                                      predictions[test_subject_ids == id])
+            experiment.log_metric(f"test_mae_person_{id}", mae)
+
 
     if forward_pass_time is not None:
         host = "gpu" if use_gpu else "cpu"

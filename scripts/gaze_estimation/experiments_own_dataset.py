@@ -83,7 +83,9 @@ def experiments_one_person():
                 del test_dataset
 
 
-def experiments_own_mpiigaze():
+def single_own_mpiigaze_save_weights():
+    save_model_path = "modal3_conv_net_own_mpiigaze_haarcascade"
+
     # hyper parameters
     experiment_name = 'own_dataset_mpii_gaze'
     track_angle_error = True
@@ -143,7 +145,8 @@ def experiments_own_mpiigaze():
                                                     learning_rate=learning_rate,
                                                     loss_name=loss_name,
                                                     track_angle_error=track_angle_error,
-                                                    use_gpu=USE_GPU
+                                                    use_gpu=USE_GPU,
+                                                    save_model_path=save_model_path
                                                 )
                                                 experiment_id = experiment_id + 1
                 del train_dataset
@@ -152,4 +155,4 @@ def experiments_own_mpiigaze():
 
 if __name__ == "__main__":
     # experiments_one_person()
-    experiments_own_mpiigaze()
+    single_own_mpiigaze_save_weights()

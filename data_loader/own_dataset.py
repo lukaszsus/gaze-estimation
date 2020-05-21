@@ -34,9 +34,13 @@ def load_own_dataset_one_person(dataset_name, person_id, val_split=0.2, batch_si
 
 def load_train_test_ds_reject_suspicious(dataset_name, person_id, val_split=0.2, batch_size=128,
                                                  grayscale=True):
+    all_subjects = list(range(0, 7)) + list(range(8, 15)) + ["23"]
+
     test_subject_ids = None
     if person_id is None:
-        right_images, left_images, poses, gazes, subject_ids = _load_all_people_reject_suspicious(dataset_name, grayscale)
+        right_images, left_images, poses, gazes, subject_ids = _load_all_people_reject_suspicious(dataset_name,
+                                                                                                  grayscale,
+                                                                                                  subjects=all_subjects)
         (right_eye_train, right_eye_test,
          left_eye_train, left_eye_test,
          headpose_train, headpose_test,

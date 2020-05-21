@@ -100,15 +100,15 @@ def do_landmarks_experiment(face_detector, landmark_detector, equalize_hist, ski
 
 
 def do_experiments():
-    face_detectors = [HogFaceDetector()]    # HaarcascadeFaceDetector(),
+    face_detectors = [HogFaceDetector(), HaarcascadeFaceDetector()]
     landmarks_detectors = [LbfLandmarksDetector(), KazemiLandmarksDetector()]
-    equalize_hist_values = [True]   # , False
+    equalize_hist_values = [False]   # , False
     skip_face_detection_values = [False]    # True,
 
     df_results = pd.DataFrame()
     results_dir = os.path.join(RESULTS_PATH, "face_landmarks")
     os.makedirs(results_dir, exist_ok=True)
-    results_path = os.path.join(results_dir, "face_landmarks_detection_hog.csv")
+    results_path = os.path.join(results_dir, "face_landmarks_correct_rgb.csv")
 
     for face_detector in face_detectors:
         for landmarks_detector in landmarks_detectors:

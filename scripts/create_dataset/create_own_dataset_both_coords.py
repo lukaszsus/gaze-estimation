@@ -34,7 +34,8 @@ def create_own_dataset():
 
     for row in tqdm(metadata):
         file_path = _get_file_path(row)
-        coords = _get_coords(row)
+        coords = _get_coords(row)      # x, y
+        coords = (coords[1], coords[0])      # y, x
         im = load_image_by_cv2(file_path)
 
         if im is None:
@@ -43,9 +44,9 @@ def create_own_dataset():
 
         start_time = time()
 
-        data = pipeline.process(im)
-        if data is None:
-            data = pipeline_haarcascade_lbf.process(im)
+        # data = pipeline.process(im)
+        # if data is None:
+        data = pipeline_haarcascade_lbf.process(im)
         if data is None:
             no_face_detected_counter += 1
             continue
@@ -95,7 +96,7 @@ def _save_own_dataset(data: dict, dataset_name="own_dataset"):
     if not os.path.exists(dataset_path):
         os.mkdir(dataset_path)
 
-    file_name = "pxx.npz"
+    file_name = "p23.npz"
     file_path = os.path.join(dataset_path, file_name)
     with open(file_path, 'wb') as file:
         np.savez(file, right_image=data["right_image"], left_image=data["left_image"], pose=data["pose_landmarks"],
@@ -103,8 +104,11 @@ def _save_own_dataset(data: dict, dataset_name="own_dataset"):
 
 
 def _load_screen_resolution():
+    """
+    return height, width
+    """
     res = np.loadtxt(own_dataset_path_wrapper("screen_resolution.txt"))
-    return res
+    return (res[1], res[0])
 
 
 if __name__ == "__main__":

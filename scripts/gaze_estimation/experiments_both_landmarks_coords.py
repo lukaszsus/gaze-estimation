@@ -69,7 +69,8 @@ def perform_experiment_with_loaded_data(experiment_name,
     labels, predictions = final_predictions(model, test_dataset)
     forward_pass_time = final_test_measure_time(model=model, test_dataset=test_dataset)
     save_metrics_to_comet(experiment, labels=labels, predictions=predictions, test_subject_ids=test_subject_ids,
-                          forward_pass_time=forward_pass_time, use_gpu=use_gpu, angle_error=False)
+                          forward_pass_time=forward_pass_time, use_gpu=use_gpu, angle_error=False,
+                          error_per_person=True)
 
     if save_locally:
         metrics = ["loss", "mean_absolute_error", "mean_squared_error", "mean_absolute_error_0",

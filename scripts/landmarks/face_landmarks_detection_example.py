@@ -45,7 +45,7 @@ if __name__ == "__main__":
     # create a copy of the cropped image to be used later
     image_template = image_cropped.copy()
     # convert image to Grayscale
-    image_gray = cv2.cvtColor(image_cropped, cv2.COLOR_BGR2GRAY)
+    image_gray = cv2.cvtColor(image_cropped, cv2.COLOR_RGB2BGR)
     # remove axes and show image
     plt.axis("off")
     plt.imshow(image_gray, cmap="gray")

@@ -13,7 +13,7 @@ def haarcascade_lbf():
     image = load_mpii_face_gaze_image(0, file_names[417])
 
     # convert image to Grayscale
-    image_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    image_gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
 
     detector = get_haarcascade_detector()
     landmark_detector = get_lbf_model()
@@ -27,6 +27,9 @@ def haarcascade_lbf():
     # Detect landmarks on "image_gray"
     _, landmarks = landmark_detector.fit(image_gray, faces)
     landmarks = filter_landmarks(landmarks, indices=MOUTH_EYES_CORNERS)
+    print("Landmarks:")
+    print(landmarks)
+
     visualize_landmarks([landmarks], image.copy(), numbers=True)
 
 
@@ -36,7 +39,7 @@ def hog_kazemi():
     image = load_mpii_face_gaze_image(0, file_names[417])
 
     # convert image to Grayscale
-    image_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    image_gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
 
     face_detector = HogFaceDetector()
     landmark_detector = KazemiLandmarksDetector()
@@ -50,6 +53,9 @@ def hog_kazemi():
     # Detect landmarks on "image_gray"
     landmarks = landmark_detector.detect(image_gray, faces)
     landmarks = filter_landmarks(landmarks, indices=MOUTH_EYES_CORNERS)
+    print("Landmarks:")
+    print(landmarks)
+
     visualize_landmarks([landmarks], image.copy(), numbers=True)
 
 

@@ -27,7 +27,7 @@ AUTOTUNE = tf.data.experimental.AUTOTUNE
 
 
 class Pipeline:
-    def __init__(self, face_detector, landmarks_detector,
+    def __init__(self, gaze_estimation_model, face_detector, landmarks_detector,
                  eye_image_width, eye_image_height, camera_matrix,
                  screen_size):
         self.face_model = load_face_model()
@@ -36,7 +36,7 @@ class Pipeline:
         self.eye_image_width = eye_image_width
         self.eye_image_height = eye_image_height
         self.camera_matrix = camera_matrix
-        self.gaze_estimation_model = load_best_modal3_conv_net(test=False)
+        self.gaze_estimation_model = gaze_estimation_model
         self.screen_size = screen_size
 
         self.image = None

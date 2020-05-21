@@ -24,7 +24,7 @@ if __name__ == "__main__":
     img.show()
 
     # convert image to Grayscale
-    image_gray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+    image_gray = cv2.cvtColor(im, cv2.COLOR_RGB2GRAY)
 
     face_detector = HogFaceDetector()
     landmark_detector = KazemiLandmarksDetector()

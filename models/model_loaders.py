@@ -21,7 +21,7 @@ session = InteractiveSession(config=config)
 AUTOTUNE = tf.data.experimental.AUTOTUNE
 
 
-def load_best_modal3_conv_net(test=False):
+def load_modal3_conv_net(weights_path, test=False):
     # model params
     conv_sizes = ({"n_filters": 16, "filter_size": (3, 3), "padding": "valid", "stride": (1, 1),
                    "pool": "avg", "pool_size": (2, 2), "pool_stride": (2, 2)},
@@ -47,7 +47,7 @@ def load_best_modal3_conv_net(test=False):
 
     # model initialization
     model = Modal3ConvNet(conv_sizes=conv_sizes, dense_sizes=dense_sizes, dropout=dropout,
-                      output_size=output_size, track_angle_error=track_angle_error)
+                          output_size=output_size, track_angle_error=track_angle_error)
     optimizer = tf.keras.optimizers.get(optimizer_name).from_config({"learning_rate": learning_rate})
     loss = tf.keras.losses.get(loss_name)
     model.compile(optimizer=optimizer,
@@ -61,7 +61,6 @@ def load_best_modal3_conv_net(test=False):
 
     history = model.fit(experiment=None, train_dataset=train_dataset, test_dataset=test_dataset, epochs=1)
 
-    weights_path = os.path.join(DATA_PATH, "models", "gaze_estimation", "best_modal3_conv_net.h5")
     model.load_weights(weights_path)
 
     if test:
@@ -69,3 +68,13 @@ def load_best_modal3_conv_net(test=False):
         print(f"MAE: {mean_absolute_error(labels, predictions)}")
 
     return model
+
+
+def load_best_modal3_conv_net(test=False):
+    weights_path = os.path.join(DATA_PATH, "models", "gaze_estimation", "best_modal3_conv_net.h5")
+    return load_modal3_conv_net(weights_path, test)
+
+
+def load_modal3_conv_net_own_mpiigaze(test=False):
+    weights_path = os.path.join(DATA_PATH, "models", "gaze_estimation", "best_modal3_conv_net.h5")
+    return load_modal3_conv_net(weights_path, test)

@@ -20,6 +20,7 @@ if __name__ == "__main__":
     annotation = np.loadtxt(mpii_face_gaze_path_wrapper(f"p{person_id_str}/p{person_id_str}.txt"), dtype=str)
     print(f"Real file path: {annotation[offset + 8 - 1, 0]}")
     landmarks = np.reshape(annotation[offset + 8 - 1, 3:15], (1, -1, 2))
+    print(landmarks)
     landmarks = landmarks.astype(np.int)
 
     visualize_landmarks_mpii_gaze_format(landmarks, im, numbers=True)

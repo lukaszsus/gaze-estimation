@@ -1,5 +1,8 @@
 import numpy as np
 import pandas as pd
+from sklearn.model_selection import train_test_split
+
+from data_loader.mpiigaze_both_from_single import _load_all_people_reject_suspicious
 from data_processing.utils import load_image_by_cv2, mpiigaze_path_wrapper
 from scripts.create_dataset.create_dataset_mpiigaze_processed_both_rgb import load_screen_size, load_face_model
 from scripts.create_dataset.create_dataset_mpiigaze_processed_one_eye import get_all_days_ids, \
@@ -41,6 +44,18 @@ def get_mpiigaze_data():
                 y_coords.append(float(coordinates[1]) / screen_size[1])
 
     return image_counter, x_coords, y_coords, df_untrusted
+
+
+def get_processed_data_own_mpiigaze():
+    dataset_name = "own_mpiigaze"
+    grayscale = False
+    all_subjects = list(range(0, 7)) + list(range(8, 15)) + ["23"]
+
+    test_subject_ids = None
+    right_images, left_images, poses, gazes, subject_ids = _load_all_people_reject_suspicious(dataset_name,
+                                                                                              grayscale,
+                                                                                              subjects=all_subjects)
+    return right_images, left_images, poses, gazes, subject_ids
 
 
 if __name__ == "__main__":
