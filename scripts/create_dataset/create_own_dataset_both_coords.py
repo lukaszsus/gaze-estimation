@@ -9,9 +9,10 @@ from scripts.create_dataset.create_dataset_mpiigaze_processed_both_rgb import no
 from settings import DATA_PATH
 
 
-def create_own_dataset():
+def create_own_dataset(dir_name: str):
     # screen resolution
-    screen_size = _load_screen_resolution()
+    screen_size = _load_screen_resolution(dir_name)
+    # screen_size = (768, 1366)
 
     # counters
     counter = 0     # count valid records
@@ -25,15 +26,15 @@ def create_own_dataset():
     coords_list = list()
 
     # pipeline
-    pipeline = create_pipeline()
-    pipeline_haarcascade_lbf = create_pipeline(face_detector="haarcascade", landmarks_detector="lbf")
-    metadata = _load_metadata()
+    pipeline = create_pipeline(screen_size=screen_size)
+    # pipeline_haarcascade_lbf = create_pipeline(face_detector="haarcascade", landmarks_detector="lbf")
+    metadata = _load_metadata(dir_name)
 
     # time
     time_sum = 0
 
     for row in tqdm(metadata):
-        file_path = _get_file_path(row)
+        file_path = _get_file_path(dir_name, row)
         coords = _get_coords(row)      # x, y
         coords = (coords[1], coords[0])      # y, x
         im = load_image_by_cv2(file_path)
@@ -44,9 +45,7 @@ def create_own_dataset():
 
         start_time = time()
 
-        # data = pipeline.process(im)
-        # if data is None:
-        data = pipeline_haarcascade_lbf.process(im)
+        data = pipeline.process(im)
         if data is None:
             no_face_detected_counter += 1
             continue
@@ -74,14 +73,16 @@ def create_own_dataset():
     _save_own_dataset(data)
 
 
-def _load_metadata():
-    metadata = np.loadtxt(own_dataset_path_wrapper("metadata.txt"), dtype=str)
+def _load_metadata(dir_name):
+    file_path = os.path.join(dir_name, "metadata.txt")
+    metadata = np.loadtxt(own_dataset_path_wrapper(file_path), dtype=str)
     return metadata
 
 
-def _get_file_path(row: list):
+def _get_file_path(dir_name: str, row: list):
     file_path = row[0]
-    file_path = own_dataset_path_wrapper(file_path)
+    file_path = file_path.replace("data/", "")
+    file_path = own_dataset_path_wrapper(os.path.join(dir_name, file_path))
     return file_path
 
 
@@ -96,21 +97,21 @@ def _save_own_dataset(data: dict, dataset_name="own_dataset"):
     if not os.path.exists(dataset_path):
         os.mkdir(dataset_path)
 
-    file_name = "p23.npz"
+    file_name = "p33.npz"
     file_path = os.path.join(dataset_path, file_name)
     with open(file_path, 'wb') as file:
         np.savez(file, right_image=data["right_image"], left_image=data["left_image"], pose=data["pose_landmarks"],
                  gaze=data["coordinates"])
 
 
-def _load_screen_resolution():
+def _load_screen_resolution(dir_name):
     """
     return height, width
     """
-    res = np.loadtxt(own_dataset_path_wrapper("screen_resolution.txt"))
+    res = np.loadtxt(own_dataset_path_wrapper(os.path.join(dir_name, "screen_resolution.txt")))
     return (res[1], res[0])
 
 
 if __name__ == "__main__":
-    create_own_dataset()
+    create_own_dataset(dir_name="ja_laptop_rodzicow_20200523")
 

@@ -33,8 +33,9 @@ def load_own_dataset_one_person(dataset_name, person_id, val_split=0.2, batch_si
 
 
 def load_train_test_ds_reject_suspicious(dataset_name, person_id, val_split=0.2, batch_size=128,
-                                                 grayscale=True):
-    all_subjects = list(range(0, 7)) + list(range(8, 15)) + ["23"]
+                                                 grayscale=True, all_subjects=None):
+    if all_subjects is None:
+        all_subjects = list(range(0, 7)) + list(range(8, 15)) + [24, 25]
 
     test_subject_ids = None
     if person_id is None:

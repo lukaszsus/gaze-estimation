@@ -22,7 +22,7 @@ if __name__ == "__main__":
     cam = set_max_camera_res(cam)
     mouse = Controller()
 
-    pipeline = create_pipeline(model_name="own_mpiigaze")
+    pipeline = create_pipeline(model_name="modal3_conv_net_own_24_25")
 
     predictions = list()
     for i in range(200):

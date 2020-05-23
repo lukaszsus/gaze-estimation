@@ -7,7 +7,7 @@ from models.face_detectors.haarcascade_face_detector import HaarcascadeFaceDetec
 from models.face_detectors.hog_face_detector import HogFaceDetector
 from models.landmarks_detectors.kazemi_landmarks_detector import KazemiLandmarksDetector
 from models.landmarks_detectors.lbf_landmarks_detector import LbfLandmarksDetector
-from models.model_loaders import load_best_modal3_conv_net, load_modal3_conv_net_own_mpiigaze
+from models.model_loaders import load_best_modal3_conv_net
 
 
 def get_screen_size():
@@ -23,12 +23,13 @@ def get_avg_camera_matrix():
                        [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]])
 
 
-def create_pipeline(model_name="best", face_detector: str = "hog", landmarks_detector="kazemi"):
+def create_pipeline(model_name="best", face_detector: str = "hog", landmarks_detector="kazemi", screen_size=None):
     eye_image_width = 60
     eye_image_height = 36
 
     camera_matrix = get_avg_camera_matrix()
-    screen_size = get_screen_size()
+    if screen_size is None:
+        screen_size = get_screen_size()
     print(f"Screen size: {screen_size}")
 
     if face_detector == "hog":
@@ -42,9 +43,11 @@ def create_pipeline(model_name="best", face_detector: str = "hog", landmarks_det
         landmarks_detector = LbfLandmarksDetector()
 
     if model_name == "best":
-        model = load_best_modal3_conv_net()
+        model = load_best_modal3_conv_net(test=False)
     elif model_name == "own_mpiigaze":
-        model = load_modal3_conv_net_own_mpiigaze(test=False)
+        model = load_best_modal3_conv_net(test=False, file_name="modal3_conv_net_own_mpiigaze.h5")
+    elif model_name == "modal3_conv_net_own_24_25":
+        model = load_best_modal3_conv_net(test=False, file_name="modal3_conv_net_own_24_25.h5")
 
     pipeline = Pipeline(gaze_estimation_model=model,
                         face_detector=face_detector,

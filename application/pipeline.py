@@ -7,7 +7,7 @@ from data_processing.head_pose import estimate_head_pose
 from data_processing.algebraic_transformations import processed_both_eyes_rgb, parse_both_eyes_rgb_landmark
 from models.face_detectors.face_detector import FaceDetector
 from models.landmarks_detectors.landmarks_detector import LandmarksDetector, filter_landmarks, \
-    MOUTH_EYES_CORNERS_HEAD_POSE, EYES_LANDMARKS
+    MOUTH_EYES_CORNERS_HEAD_POSE, EYES_LANDMARKS, MOUTH_EYES_CORNERS
 from models.model_loaders import load_best_modal3_conv_net
 from scripts.create_dataset.create_dataset_mpiigaze_processed_both_from_single_eye import resultant_angles
 from scripts.create_dataset.create_dataset_mpiigaze_processed_both_rgb import load_face_model, norm_landmarks
@@ -31,6 +31,7 @@ class Pipeline:
                  eye_image_width, eye_image_height, camera_matrix,
                  screen_size):
         self.face_model = load_face_model()
+        self.face_model[2, :] = self.face_model[2, :] * (-1)
         self.face_detector: FaceDetector = face_detector
         self.landmarks_detector: LandmarksDetector = landmarks_detector
         self.eye_image_width = eye_image_width
@@ -107,7 +108,9 @@ class Pipeline:
         return prediction
 
     def _algebraic_tranformations(self):
-        landmarks_head_pose = filter_landmarks(self.landmarks, indices=MOUTH_EYES_CORNERS_HEAD_POSE)
+        # landmarks_head_pose = filter_landmarks(self.landmarks, indices=MOUTH_EYES_CORNERS_HEAD_POSE)
+
+        landmarks_head_pose = filter_landmarks(self.landmarks, indices=MOUTH_EYES_CORNERS)
 
         # if CHANGE_EYES:
         #     landmarks_head_pose = landmarks_head_pose[[3, 2, 1, 0, 4, 5]]

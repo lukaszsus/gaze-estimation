@@ -4,6 +4,7 @@ from application.pipeline import Pipeline
 from data_processing.utils import mpii_face_gaze_path_wrapper, load_image_by_cv2, mpiigaze_path_wrapper
 from models.face_detectors.hog_face_detector import HogFaceDetector
 from models.landmarks_detectors.kazemi_landmarks_detector import KazemiLandmarksDetector
+from models.model_loaders import load_best_modal3_conv_net
 from scripts.create_dataset.create_dataset_mpiigaze_processed_both_rgb import load_camera_matrix, \
     load_screen_size
 
@@ -26,8 +27,9 @@ if __name__ == "__main__":
 
     face_detector = HogFaceDetector()
     landmarks_detector = KazemiLandmarksDetector()
-
-    pipeline = Pipeline(face_detector=face_detector,
+    model = load_best_modal3_conv_net()
+    pipeline = Pipeline(gaze_estimation_model=model,
+                        face_detector=face_detector,
                         landmarks_detector=landmarks_detector,
                         eye_image_width=eye_image_width,
                         eye_image_height=eye_image_height,

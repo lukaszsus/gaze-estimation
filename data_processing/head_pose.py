@@ -10,7 +10,7 @@ def estimate_head_pose(im, landmarks, camera_matrix, face_model_points, show=Fal
     (success, rotation_vector, translation_vector) = cv2.solvePnP(face_model_points, landmarks, camera_matrix,
                                                                   dist_coeffs, flags=cv2.SOLVEPNP_ITERATIVE)
     # change coordinate system orientation
-    translation_vector = np.multiply(translation_vector, [[-1], [-1], [-1]])
+    # translation_vector = np.multiply(translation_vector, [[-1], [-1], [-1]])
 
     if show:
         (line_start_point, jacobian) = cv2.projectPoints(np.array([(0.0, 0.0, 0.0)]), rotation_vector,

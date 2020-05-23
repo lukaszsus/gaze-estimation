@@ -1,6 +1,7 @@
 from functools import partial
 
 from data_loader.hysts import load_hysts_mpiigaze_train_test_ds
+from data_loader.mpii_face_gaze import load_test_mpii_face_gaze
 from data_loader.mpiigaze_both_from_single import load_mpiigaze_train_test_ds_both_from_single, \
     load_mpiigaze_train_test_ds_both_leave_one_out, load_mpiigaze_train_test_ds_both_leave_one_out_reject_suspicious
 from data_loader.mpiigaze_processed_loader import load_mpiigaze_train_test_2_angles_headpose
@@ -191,8 +192,8 @@ data_sets = {
              dataset_name="mpiigaze_both_landmarks_coords",
              grayscale=True)},
     "own_dataset_one_person": {"name": "own_dataset_one_person",
-                               "path": "own_dataset_one_person",
-                               "dataset_size": "5301 per subject",
+                               "path": "own_dataset",
+                               "dataset_size": "unknown",
                                "input": ["right_eye_img", "left_eye_img", "headpose_6_angles"],
                                "eye_im_size": (36, 60),
                                "grayscale": False,
@@ -213,5 +214,52 @@ data_sets = {
                               "output_size": 2,
                               "load_function": partial(load_train_test_ds_reject_suspicious,
                                                        dataset_name="own_mpiigaze",
-                                                       grayscale=False)},
+                                                       grayscale=False,
+                                                       all_subjects=list(range(0, 7)) +
+                                                                    list(range(8, 15)) +
+                                                                    [33])},
+    "test_mpii_face_gaze_own_pipeline": {"name": "test_mpii_face_gaze_own_pipeline",
+                                         "path": "mpii_face_gaze_processed",
+                                         "dataset_size": "unknown",
+                                         "input": ["right_eye_img", "left_eye_img", "headpose_6_angles"],
+                                         "eye_im_size": (36, 60),
+                                         "grayscale": False,
+                                         "headpose_size": 30,
+                                         "output": "angles",
+                                         "output_size": 2,
+                                         "load_function": partial(load_test_mpii_face_gaze,
+                                                                  dataset_name="mpii_face_gaze_processed",
+                                                                  grayscale=False,
+                                                                  all_subjects=list(range(0, 7)) +
+                                                                               list(range(8, 15)))},
+    "mpii_face_gaze_own_pipeline": {"name": "mpii_face_gaze_own_pipeline",
+                                    "path": "mpii_face_gaze_processed",
+                                    "dataset_size": "unknown",
+                                    "input": ["right_eye_img", "left_eye_img", "headpose_6_angles"],
+                                    "eye_im_size": (36, 60),
+                                    "grayscale": False,
+                                    "headpose_size": 30,
+                                    "output": "angles",
+                                    "output_size": 2,
+                                    "load_function": partial(load_train_test_ds_reject_suspicious,
+                                                             dataset_name="mpii_face_gaze_processed",
+                                                             grayscale=False,
+                                                             all_subjects=list(range(0, 7)) +
+                                                                          list(range(8, 15)) +
+                                                                          [24, 25])},
+    "mean_camera_matrix": {"name": "mean_camera_matrix",
+                           "path": "mpii_face_gaze_mean_camera_matrix",
+                           "dataset_size": "unknown",
+                           "input": ["right_eye_img", "left_eye_img", "headpose_6_angles"],
+                           "eye_im_size": (36, 60),
+                           "grayscale": False,
+                           "headpose_size": 30,
+                           "output": "angles",
+                           "output_size": 2,
+                           "load_function": partial(load_train_test_ds_reject_suspicious,
+                                                    dataset_name="mpii_face_gaze_mean_camera_matrix",
+                                                    grayscale=False,
+                                                    all_subjects=list(range(0, 7)) +
+                                                                 list(range(8, 15)) +
+                                                                 [24, 25])},
 }

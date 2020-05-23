@@ -22,11 +22,11 @@ def experiments_one_person():
     track_angle_error = True
     experiment_id = 0
     start_datetime = datetime.now()
-    people_ids = ["xx"]
+    people_ids = [24]
     experiments_data_set_names = ['own_dataset_one_person']
     val_split = 0.2
     models_cls = [Modal3ConvNet]
-    num_epochs = [50]
+    num_epochs = [200]
     batch_sizes = [128]
     optimizers_names = ['Adam']
     learning_rates = [0.001]
@@ -84,14 +84,15 @@ def experiments_one_person():
 
 
 def single_own_mpiigaze_save_weights():
-    save_model_path = "modal3_conv_net_own_mpiigaze_haarcascade"
+    # save_model_path = "modal3_conv_net_own_30"
+    save_model_path = None
 
     # hyper parameters
     experiment_name = 'own_dataset_mpii_gaze'
     track_angle_error = True
     experiment_id = 0
     start_datetime = datetime.now()
-    people_ids = [None]
+    people_ids = [None]     # people ids for leave one out
     experiments_data_set_names = ['own_dataset_mpii_gaze']
     val_split = 0.2
     models_cls = [Modal3ConvNet]

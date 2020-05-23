@@ -110,7 +110,8 @@ def prepare_dataset(x, y, batch_size=128, shuffle=True):
     y = tf.data.Dataset.from_tensor_slices(y)
     dataset = tf.data.Dataset.zip((x, y))
     if shuffle:
-        buffer_size = ds_size if ds_size <= 32768 else 32768
+        buffer_size = ds_size if ds_size <= 49152 else 49152
+        # buffer_size = ds_size if ds_size <= 32768 else 32768
         dataset = dataset.shuffle(buffer_size=buffer_size).batch(batch_size=batch_size)
     else:
         dataset = dataset.batch(batch_size=batch_size)

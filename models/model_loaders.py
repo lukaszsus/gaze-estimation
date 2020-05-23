@@ -70,11 +70,6 @@ def load_modal3_conv_net(weights_path, test=False):
     return model
 
 
-def load_best_modal3_conv_net(test=False):
-    weights_path = os.path.join(DATA_PATH, "models", "gaze_estimation", "best_modal3_conv_net.h5")
-    return load_modal3_conv_net(weights_path, test)
-
-
-def load_modal3_conv_net_own_mpiigaze(test=False):
-    weights_path = os.path.join(DATA_PATH, "models", "gaze_estimation", "best_modal3_conv_net.h5")
+def load_best_modal3_conv_net(test=False, file_name="best_modal3_conv_net.h5"):
+    weights_path = os.path.join(DATA_PATH, "models", "gaze_estimation", file_name)
     return load_modal3_conv_net(weights_path, test)

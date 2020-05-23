@@ -61,5 +61,7 @@ def _get_img_gaze_headpose_per_eye(im, eye_center, head_rotation, eye_image_widt
     eye_img, headpose = mpii_gaze_normalize_image_without_gaze(im, eye_center, head_rotation,
                                                                (eye_image_width, eye_image_height), camera_matrix)
     headpose_theta, headpose_phi = count_headpose_angles(headpose)
+    # TODO Should be count_headpose_angles(headpose / np.linalg.norm(headpose)) but it generally makes no difference
+    # TODO and it is like that in many places.
 
     return eye_img, headpose_theta, headpose_phi
