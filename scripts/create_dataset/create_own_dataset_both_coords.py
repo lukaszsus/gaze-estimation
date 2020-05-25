@@ -37,6 +37,9 @@ def create_own_dataset(dir_name: str):
         file_path = _get_file_path(dir_name, row)
         coords = _get_coords(row)      # x, y
         coords = (coords[1], coords[0])      # y, x
+
+        if not os.path.exists(file_path):
+            continue
         im = load_image_by_cv2(file_path)
 
         if im is None:
@@ -97,7 +100,7 @@ def _save_own_dataset(data: dict, dataset_name="own_dataset"):
     if not os.path.exists(dataset_path):
         os.mkdir(dataset_path)
 
-    file_name = "p33.npz"
+    file_name = "p35.npz"
     file_path = os.path.join(dataset_path, file_name)
     with open(file_path, 'wb') as file:
         np.savez(file, right_image=data["right_image"], left_image=data["left_image"], pose=data["pose_landmarks"],
@@ -113,5 +116,5 @@ def _load_screen_resolution(dir_name):
 
 
 if __name__ == "__main__":
-    create_own_dataset(dir_name="ja_laptop_rodzicow_20200523")
+    create_own_dataset(dir_name="tata_20200524_moj_laptop")
 

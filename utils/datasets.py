@@ -191,6 +191,21 @@ data_sets = {
              load_mpiigaze_train_test_ds_both_leave_one_out_reject_suspicious,
              dataset_name="mpiigaze_both_landmarks_coords",
              grayscale=True)},
+    "mpiigaze_both_landmarks_coords_full_rgb_leave_one_out_reject_suspicious":
+        {"name": "mpiigaze_both_landmarks_coords_full",
+         "path": "mpiigaze_both_landmarks_coords_full",
+         "dataset_size": "full",
+         "input": ["right_eye_img", "left_eye_img",
+                   "headpose_6_angles"],
+         "eye_im_size": (36, 60),
+         "grayscale": True,
+         "headpose_size": 30,
+         "output": "angles",
+         "output_size": 2,
+         "load_function": partial(
+             load_mpiigaze_train_test_ds_both_leave_one_out_reject_suspicious,
+             dataset_name="mpiigaze_both_landmarks_coords_full",
+             grayscale=True)},
     "own_dataset_one_person": {"name": "own_dataset_one_person",
                                "path": "own_dataset",
                                "dataset_size": "unknown",
@@ -217,7 +232,7 @@ data_sets = {
                                                        grayscale=False,
                                                        all_subjects=list(range(0, 7)) +
                                                                     list(range(8, 15)) +
-                                                                    [33])},
+                                                                    [35])},
     "test_mpii_face_gaze_own_pipeline": {"name": "test_mpii_face_gaze_own_pipeline",
                                          "path": "mpii_face_gaze_processed",
                                          "dataset_size": "unknown",

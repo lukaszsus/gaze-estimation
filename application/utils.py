@@ -48,6 +48,8 @@ def create_pipeline(model_name="best", face_detector: str = "hog", landmarks_det
         model = load_best_modal3_conv_net(test=False, file_name="modal3_conv_net_own_mpiigaze.h5")
     elif model_name == "modal3_conv_net_own_24_25":
         model = load_best_modal3_conv_net(test=False, file_name="modal3_conv_net_own_24_25.h5")
+    elif model_name == "modal3_conv_net_mean_camera_matrix":
+        model = load_best_modal3_conv_net(test=False, file_name="modal3_conv_net_mean_camera_matrix.h5")
 
     pipeline = Pipeline(gaze_estimation_model=model,
                         face_detector=face_detector,
