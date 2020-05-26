@@ -9,7 +9,7 @@ from tqdm import tqdm
 from data_processing.utils import load_image_by_cv2, own_dataset_path_wrapper
 from models.face_detectors.haarcascade_face_detector import HaarcascadeFaceDetector
 from models.face_detectors.hog_face_detector import HogFaceDetector
-from scripts.create_dataset.create_own_dataset_both_coords import _load_metadata
+from data_processing.own_dataset import _load_metadata
 from settings import RESULTS_PATH
 from utils.landmarks import visualize_faces
 

@@ -191,6 +191,21 @@ data_sets = {
              load_mpiigaze_train_test_ds_both_leave_one_out_reject_suspicious,
              dataset_name="mpiigaze_both_landmarks_coords",
              grayscale=True)},
+    "mpiigaze_both_landmarks_coords_rgb_leave_one_out_reject_suspicious":
+        {"name": "mpiigaze_both_landmarks_coords_rgb",
+         "path": "mpiigaze_both_landmarks_coords",
+         "dataset_size": "3000 per subject",
+         "input": ["right_eye_img", "left_eye_img",
+                   "headpose_6_angles"],
+         "eye_im_size": (36, 60),
+         "grayscale": False,
+         "headpose_size": 30,
+         "output": "angles",
+         "output_size": 2,
+         "load_function": partial(
+             load_mpiigaze_train_test_ds_both_leave_one_out_reject_suspicious,
+             dataset_name="mpiigaze_both_landmarks_coords",
+             grayscale=False)},
     "mpiigaze_both_landmarks_coords_full_rgb_leave_one_out_reject_suspicious":
         {"name": "mpiigaze_both_landmarks_coords_full",
          "path": "mpiigaze_both_landmarks_coords_full",
@@ -232,7 +247,8 @@ data_sets = {
                                                        grayscale=False,
                                                        all_subjects=list(range(0, 7)) +
                                                                     list(range(8, 15)) +
-                                                                    [35])},
+                                                                    [24, 25]
+                                                                    + list(range(30, 36)))},
     "test_mpii_face_gaze_own_pipeline": {"name": "test_mpii_face_gaze_own_pipeline",
                                          "path": "mpii_face_gaze_processed",
                                          "dataset_size": "unknown",
@@ -277,4 +293,18 @@ data_sets = {
                                                     all_subjects=list(range(0, 7)) +
                                                                  list(range(8, 15)) +
                                                                  [24, 25])},
+    "own_dataset_only": {"name": "own_dataset_only",
+                                           "path": "own_dataset",
+                                           "dataset_size": "3000 per subject",
+                                           "input": ["right_eye_img", "left_eye_img", "headpose_6_angles"],
+                                           "eye_im_size": (36, 60),
+                                           "grayscale": False,
+                                           "headpose_size": 30,
+                                           "output": "angles",
+                                           "output_size": 2,
+                                           "load_function": partial(load_train_test_ds_reject_suspicious,
+                                                                    dataset_name="own_dataset",
+                                                                    grayscale=False,
+                                                                    all_subjects=[24, 25]
+                                                                    + list(range(30, 36)))},
 }

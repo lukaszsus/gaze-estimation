@@ -4,7 +4,8 @@ import numpy as np
 from tqdm import tqdm
 from time import time
 from application.utils import create_pipeline
-from data_processing.utils import load_image_by_cv2, own_dataset_path_wrapper
+from data_processing.own_dataset import _load_screen_resolution, _load_metadata, _get_file_path, _get_coords
+from data_processing.utils import load_image_by_cv2
 from scripts.create_dataset.create_dataset_mpiigaze_processed_both_rgb import norm_coords
 from settings import DATA_PATH
 
@@ -76,25 +77,6 @@ def create_own_dataset(dir_name: str):
     _save_own_dataset(data)
 
 
-def _load_metadata(dir_name):
-    file_path = os.path.join(dir_name, "metadata.txt")
-    metadata = np.loadtxt(own_dataset_path_wrapper(file_path), dtype=str)
-    return metadata
-
-
-def _get_file_path(dir_name: str, row: list):
-    file_path = row[0]
-    file_path = file_path.replace("data/", "")
-    file_path = own_dataset_path_wrapper(os.path.join(dir_name, file_path))
-    return file_path
-
-
-def _get_coords(row: list):
-    x = float(row[1])
-    y = float(row[2])
-    return x, y
-
-
 def _save_own_dataset(data: dict, dataset_name="own_dataset"):
     dataset_path = os.path.join(DATA_PATH, dataset_name)
     if not os.path.exists(dataset_path):
@@ -105,14 +87,6 @@ def _save_own_dataset(data: dict, dataset_name="own_dataset"):
     with open(file_path, 'wb') as file:
         np.savez(file, right_image=data["right_image"], left_image=data["left_image"], pose=data["pose_landmarks"],
                  gaze=data["coordinates"])
-
-
-def _load_screen_resolution(dir_name):
-    """
-    return height, width
-    """
-    res = np.loadtxt(own_dataset_path_wrapper(os.path.join(dir_name, "screen_resolution.txt")))
-    return (res[1], res[0])
 
 
 if __name__ == "__main__":

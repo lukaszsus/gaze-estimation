@@ -166,18 +166,22 @@ def main_experiments():
 
 
 def single_experiment_with_save_weights():
-    save_model_path = "best_modal3_conv_net"
+    save_model_path = None
+    # save_model_path = "best_modal3_conv_net"
 
     # hyper parameters
-    experiment_name = 'mpiigaze_both_landmarks_coords'
+    # experiment_name = 'mpiigaze_both_landmarks_coords'
+    # experiment_name = 'own_dataset_only'
+    experiment_name = 'own_all_dataset_mpii_gaze'
     track_angle_error = True
     experiment_id = 0
     start_datetime = datetime.now()
     people_ids = [None]
-    experiments_data_set_names = ['mpiigaze_both_landmarks_coords_rgb']
-    val_split = 0.05
+    # experiments_data_set_names = ['mpiigaze_both_landmarks_coords_rgb']
+    experiments_data_set_names = ['own_dataset_mpii_gaze']
+    val_split = 0.20
     models_cls = [Modal3ConvNet]
-    num_epochs = [30]
+    num_epochs = [50]
     batch_sizes = [128]
     optimizers_names = ['Adam']
     learning_rates = [0.001]
@@ -310,8 +314,8 @@ def experiments_leave_one_out_reject_suspicious():
     start_datetime = datetime.now()
     people_ids = list(range(0, 7)) + list(range(8, 15))
     print(people_ids)
-    experiments_data_set_names = ['mpiigaze_both_landmarks_coords_grayscale_leave_one_out',
-                                  'mpiigaze_both_landmarks_coords_rgb_leave_one_out']
+    experiments_data_set_names = ['mpiigaze_both_landmarks_coords_grayscale_leave_one_out_reject_suspicious',
+                                  'mpiigaze_both_landmarks_coords_rgb_leave_one_out_reject_suspicious']
     val_split = 0.2
     models_cls = [Modal3ConvNet]
     num_epochs = [30]
@@ -443,7 +447,7 @@ def experiments_leave_one_out_full_reject_suspicious():
 
 if __name__ == '__main__':
     # main_experiments()
-    # single_experiment_with_save_weights()
+    single_experiment_with_save_weights()
     # experiments_leave_one_out()
     # experiments_leave_one_out_reject_suspicious()
-    experiments_leave_one_out_full_reject_suspicious()
+    # experiments_leave_one_out_full_reject_suspicious()

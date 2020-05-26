@@ -1,19 +1,16 @@
 import cv2
 import numpy as np
-from PIL import Image
-
-from application.data_processing import convert_to_model_format
-from data_processing.head_pose import estimate_head_pose
-from data_processing.algebraic_transformations import processed_both_eyes_rgb, parse_both_eyes_rgb_landmark
-from models.face_detectors.face_detector import FaceDetector
-from models.landmarks_detectors.landmarks_detector import LandmarksDetector, filter_landmarks, \
-    MOUTH_EYES_CORNERS_HEAD_POSE, EYES_LANDMARKS, MOUTH_EYES_CORNERS
-from models.model_loaders import load_best_modal3_conv_net
-from scripts.create_dataset.create_dataset_mpiigaze_processed_both_from_single_eye import resultant_angles
-from scripts.create_dataset.create_dataset_mpiigaze_processed_both_rgb import load_face_model, norm_landmarks
-
 import tensorflow as tf
 from tensorflow.compat.v1 import ConfigProto, InteractiveSession
+
+from application.data_processing import convert_to_model_format
+from data_processing.algebraic_transformations import parse_both_eyes_rgb_landmark
+from data_processing.head_pose import estimate_head_pose
+from models.face_detectors.face_detector import FaceDetector
+from models.landmarks_detectors.landmarks_detector import LandmarksDetector, filter_landmarks, \
+    EYES_LANDMARKS, MOUTH_EYES_CORNERS
+from scripts.create_dataset.create_dataset_mpiigaze_processed_both_from_single_eye import resultant_angles
+from scripts.create_dataset.create_dataset_mpiigaze_processed_both_rgb import load_face_model, norm_landmarks
 
 # USE_GPU = False  # just for logging some metrics correctly (for example forward_pass_time)
 """
