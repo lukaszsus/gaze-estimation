@@ -8,6 +8,7 @@ from data_loader.mpiigaze_processed_loader import load_mpiigaze_train_test_2_ang
 from data_loader.mpiigaze_processed_one_eye import load_mpiigaze_train_test_ds_one_eye, \
     load_mpiigaze_train_test_ds_one_eye_leave_one_out
 from data_loader.own_dataset import load_own_dataset_one_person, load_train_test_ds_reject_suspicious
+from data_loader.validation_with_loaded_model import load_test_own_mpiigaze_full
 
 data_sets = {
     "hysts_mpii_gaze": {"name": "hysts_mpii_gaze",
@@ -294,17 +295,49 @@ data_sets = {
                                                                  list(range(8, 15)) +
                                                                  [24, 25])},
     "own_dataset_only": {"name": "own_dataset_only",
-                                           "path": "own_dataset",
-                                           "dataset_size": "3000 per subject",
-                                           "input": ["right_eye_img", "left_eye_img", "headpose_6_angles"],
-                                           "eye_im_size": (36, 60),
-                                           "grayscale": False,
-                                           "headpose_size": 30,
-                                           "output": "angles",
-                                           "output_size": 2,
-                                           "load_function": partial(load_train_test_ds_reject_suspicious,
-                                                                    dataset_name="own_dataset",
-                                                                    grayscale=False,
-                                                                    all_subjects=[24, 25]
-                                                                    + list(range(30, 36)))},
+                         "path": "own_dataset",
+                         "dataset_size": "3000 per subject",
+                         "input": ["right_eye_img", "left_eye_img", "headpose_6_angles"],
+                         "eye_im_size": (36, 60),
+                         "grayscale": False,
+                         "headpose_size": 30,
+                         "output": "angles",
+                         "output_size": 2,
+                         "load_function": partial(load_train_test_ds_reject_suspicious,
+                                                  dataset_name="own_dataset",
+                                                  grayscale=False,
+                                                  all_subjects=[24, 25]
+                                                               + list(range(30, 36)))},
+    "own_mpiigaze_full_train_val":
+        {"name": "own_mpiigaze_full_train_val",
+         "path": "own_mpiigaze_full_train_val_test/train_val",
+         "dataset_size": "full",
+         "input": ["right_eye_img", "left_eye_img",
+                   "headpose_6_angles"],
+         "eye_im_size": (36, 60),
+         "grayscale": True,
+         "headpose_size": 30,
+         "output": "angles",
+         "output_size": 2,
+         "load_function": partial(
+             load_train_test_ds_reject_suspicious,
+             dataset_name="own_mpiigaze_full_train_val_test/train_val",
+             grayscale=False,
+             all_subjects=list(range(0, 7)) + list(range(8, 15)) + [24, 25] + list(range(30, 36))
+         )},
+    "own_mpiigaze_full_train_test": {"name": "own_mpiigaze_full_train_test",
+                                     "path": "own_mpiigaze_full_train_val_test/test",
+                                     "dataset_size": "unknown",
+                                     "input": ["right_eye_img", "left_eye_img", "headpose_6_angles"],
+                                     "eye_im_size": (36, 60),
+                                     "grayscale": False,
+                                     "headpose_size": 30,
+                                     "output": "angles",
+                                     "output_size": 2,
+                                     "load_function": partial(load_test_own_mpiigaze_full,
+                                                              dataset_name="own_mpiigaze_full_train_val_test/test",
+                                                              grayscale=False,
+                                                              all_subjects=list(range(0, 7)) +
+                                                                           list(range(8, 15)) + [24, 25] +
+                                                                           list(range(30, 36)))},
 }
