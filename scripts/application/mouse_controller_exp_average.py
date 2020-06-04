@@ -1,17 +1,14 @@
 import os
-import numpy as np
-import time
-from tkinter import Canvas, Tk, mainloop
 
 import cv2
+import numpy as np
 from pynput import keyboard
 from pynput.mouse import Controller
-from sklearn.linear_model import Ridge, LinearRegression
-from sklearn.svm import SVR
+from sklearn.linear_model import LinearRegression
 from tqdm import tqdm
 
 from application.utils import create_pipeline, get_screen_size
-from data_processing.own_dataset import _load_screen_resolution, _load_metadata, _get_file_path, _get_coords
+from data_processing.own_dataset import _load_metadata, _get_file_path, _get_coords
 from data_processing.utils import load_image_by_cv2
 from settings import DATA_PATH
 
@@ -51,9 +48,11 @@ def start_app_mouse_controller():
     mouse = Controller()
 
     screen_size = get_screen_size()
-    pipeline = create_pipeline(model_name="best", screen_size=screen_size)
+    model_name = "modal3_conv_net_own_mpiigaze_train_val_test_200_epochs.h5"
+    # pipeline = create_pipeline(model_name="best", screen_size=screen_size)
     # pipeline = create_pipeline(model_name="modal3_conv_net_mean_camera_matrix", screen_size=screen_size)
     # pipeline = create_pipeline(model_name="modal3_conv_net_full_0.h5", screen_size=screen_size)
+    pipeline = create_pipeline(model_name=model_name, screen_size=screen_size)
 
     pred_x = float(screen_size[1] / 2)
     pred_y = float(screen_size[0] / 2)

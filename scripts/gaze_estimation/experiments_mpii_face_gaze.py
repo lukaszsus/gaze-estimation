@@ -11,7 +11,7 @@ def single_own_mpiigaze_save_weights():
     save_model_path = "modal3_conv_net_mpii_face_gaze"
 
     # hyper parameters
-    experiment_name = 'own_mpii_face_gaze_own_pipeline'      # 'mean_camera_matrix'
+    experiment_name = 'own_mpii_face_gaze_dedicated_camera_matrix'      # 'mean_camera_matrix'
     track_angle_error = True
     experiment_id = 0
     start_datetime = datetime.now()

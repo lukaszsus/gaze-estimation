@@ -32,7 +32,7 @@ def get_all_images_ids_for_day(person_id, day_id):
 
 
 def process_mpii_face_gaze():
-    mean_camera_matrix = True
+    mean_camera_matrix = False
 
     right_images = list()
     left_images = list()
@@ -96,7 +96,7 @@ def save_data_to_file(right_images_list, left_images_list, poses_list, coords_li
     poses = np.concatenate(poses_list)
     coords = np.stack(coords_list)
 
-    dir_path = os.path.join(DATA_PATH, "mpii_face_gaze_mean_camera_matrix")
+    dir_path = os.path.join(DATA_PATH, "mpii_face_gaze_processed")
     os.makedirs(dir_path, exist_ok=True)
     file_path = os.path.join(dir_path, "all_full.npz")
     np.savez(file_path, right_image=right_images, left_image=left_images, pose=poses,

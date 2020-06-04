@@ -6,8 +6,8 @@ from models.modal3_conv_net import Modal3ConvNet
 from utils.datasets import data_sets
 
 
-def single_own_mpiigaze_full_save_weights(epochs):
-    save_model_path = f"modal3_conv_net_own_mpiigaze_train_val_test_{epochs}_epochs"
+def single_own_mpiigaze_full_save_weights(hiper_param_epochs):
+    save_model_path = f"modal3_conv_net_own_mpiigaze_train_val_test_{hiper_param_epochs}_epochs"
 
     # hyper parameters
     experiment_name = 'own_mpii_full_train_val_test_split'
@@ -18,7 +18,7 @@ def single_own_mpiigaze_full_save_weights(epochs):
     experiments_data_set_names = ['own_mpiigaze_full_train_val']
     val_split = 0.2
     models_cls = [Modal3ConvNet]
-    num_epochs = [30]
+    num_epochs = [hiper_param_epochs]
     batch_sizes = [128]
     optimizers_names = ['Adam']
     learning_rates = [0.001]
@@ -76,7 +76,7 @@ def single_own_mpiigaze_full_save_weights(epochs):
                 del test_dataset
 
 
-def check_error_on_test_data(epochs):
+def check_error_on_test_data(hiper_param_epochs):
     # hyper parameters
     experiment_name = 'own_mpii_full_train_val_test_split'
     experiment_id = 0
@@ -84,7 +84,7 @@ def check_error_on_test_data(epochs):
     batch_size = 128
 
     model = load_best_modal3_conv_net(test=False,
-                                      file_name=f"modal3_conv_net_own_mpiigaze_train_val_test_{epochs}_epochs.h5")
+                                      file_name=f"modal3_conv_net_own_mpiigaze_train_val_test_{hiper_param_epochs}_epochs.h5")
 
     for data_set_name in experiments_data_set_names:
         data_set = data_sets[data_set_name]

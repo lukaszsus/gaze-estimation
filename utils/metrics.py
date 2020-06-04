@@ -6,6 +6,7 @@ import time
 def convert_to_unit_vector(angles):
     x = -tf.math.cos(angles[:, 0]) * tf.math.sin(angles[:, 1])
     y = -tf.math.sin(angles[:, 0])
+    # z = -tf.math.cos(angles[:, 0]) * tf.math.cos(angles[:, 1])
     z = -tf.math.cos(angles[:, 1]) * tf.math.cos(angles[:, 1])
     norm = tf.math.sqrt(x**2 + y**2 + z**2)
     x /= norm
